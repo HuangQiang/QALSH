@@ -17,21 +17,18 @@ Authors
 --------
 * **Qiang Huang**
 
-  Smart Systems Institute
-  
-  National University of Singapore (NUS),
+  Smart Systems Institute, National University of Singapore (NUS),
   
   Singapore, 119613 
   
   huangq2011@gmail.com, huangq25@mail2.sysu.edu.cn
   
   https://sites.google.com/site/qianghuang2017/
+  
 
 * **Jianlin Feng**
 
-  School of Data and Computer Science,
-  
-  Sun Yat-Sen University (SYSU),
+  School of Data and Computer Science, Sun Yat-Sen University (SYSU),
   
   Guangzhou, China, 510006
   
