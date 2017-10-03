@@ -15,9 +15,10 @@ c-ANN) search under l_p norm, where p \in (0, 2].
 
 Authors
 --------
+
 * **Qiang Huang**
 
-  Smart Systems Institute, National University of Singapore (NUS),
+  Smart Systems Institute, National University of Singapore (NUS),
   
   Singapore, 119613 
   
