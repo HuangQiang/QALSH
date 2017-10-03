@@ -1,7 +1,4 @@
-# QALSH
-====================================================================================================
-
-QALSH: Query-Aware Locality-Sensitive Hashing
+# QALSH: Query-Aware Locality-Sensitive Hashing
 
 Version: 1.3.0
 
@@ -20,43 +17,34 @@ Authors
 --------
 * **Qiang Huang**
 
-School of Data and Computer Science,
-
-Sun Yat-Sen University (SYSU),
-
-Guangzhou, China
-
-huangq2011@gmail.com, huangq25@mail2.sysu.edu.cn
-
-https://sites.google.com/site/qianghuang2017/
-
+  School of Data and Computer Science,
+  Sun Yat-Sen University (SYSU),
+  Guangzhou, China
+  huangq2011@gmail.com, huangq25@mail2.sysu.edu.cn
+  https://sites.google.com/site/qianghuang2017/
 
 * **Jianlin Feng**
 
-School of Data and Computer Science,
-
-Sun Yat-Sen University (SYSU),
-
-Guangzhou, China
-
-fengjlin@mail.sysu.edu.cn, fengjl9@gmail.com
-
-http://ss.sysu.edu.cn/~fjl/
+  School of Data and Computer Science,
+  Sun Yat-Sen University (SYSU),
+  Guangzhou, China
+  fengjlin@mail.sysu.edu.cn, fengjl9@gmail.com
+  http://ss.sysu.edu.cn/~fjl/
 
 
 Relevant Paper
 --------
 
-The paper for the package of QALSH has been published in VLDB 2016 and The VLDB 
+  The paper for the package of QALSH has been published in VLDB 2016 and The VLDB 
 Journal, which are displayed as follows:
 
-Qiang Huang, Jianlin Feng, Yikai Zhang, Qiong Fang, and Wilfred Ng. Query-Aware
+* **Qiang Huang, Jianlin Feng, Yikai Zhang, Qiong Fang, and Wilfred Ng. Query-Aware
 Locality-Sensitive Hashing for Approximate Nearest Neighbor Search. In 
-Proceedings of the VLDB Endowment, 9(1): 1 - 12, 2015.
+Proceedings of the VLDB Endowment, 9(1): 1 - 12, 2015.**
 
-Qiang Huang, Jianlin Feng, Qiong Fang, Wilfred Ng, and Wei Wang. Query-Aware 
+* **Qiang Huang, Jianlin Feng, Qiong Fang, Wilfred Ng, and Wei Wang. Query-Aware 
 Locality-Sensitive Hashing Scheme for l_p Norm. The VLDB Journal, 26(5): 683 – 
-708, 2017
+708, 2017**
 
-If you use the package for publications, please cite the papers above.
+  If you use the package for publications, please cite the papers above.
 
