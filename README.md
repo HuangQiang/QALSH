@@ -38,7 +38,7 @@ Authors
   http://ss.sysu.edu.cn/~fjl/
 
 
-Relevant Paper
+Relevant Papers
 --------
 
 The paper for the package of QALSH has been published in VLDB 2016 and The VLDB 
@@ -50,7 +50,7 @@ Proceedings of the VLDB Endowment, 9(1): 1 - 12, 2015.**
 
 * **Qiang Huang, Jianlin Feng, Qiong Fang, Wilfred Ng, and Wei Wang. Query-Aware 
 Locality-Sensitive Hashing Scheme for l_p Norm. The VLDB Journal, 26(5): 683 – 
-708, 2017**
+708, 2017.**
 
 If you use the package for publications, please cite the papers above.
 
