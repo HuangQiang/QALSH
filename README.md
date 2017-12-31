@@ -12,6 +12,27 @@ This package is written in the C++ programming language. It provides an
 external LSH scheme (QALSH) for c-Approximate Nearest Neighbor (or simply 
 c-ANN) search under l_p norm, where p \in (0, 2].
 
+How to use this Package?
+--------
+
+We provide a Makefile and a script (i.e., run_mnist.sh) as a running example 
+for comipling and running this package. Before start running this package, 
+please ensure the input format of the dataset and query set is correct. We 
+provide a sample dataset and query set (i.e., Mnist) for your reference.
+
+We also provide the scripts (i.e., run_sift.sh, run_gist.sh, run_trevi.sh, 
+and run_p53.sh) for the users who would like to reproduce our results presented 
+in PVLDB 2015 and VLDBJ 2017. The datasets Sift, Gist, Trevi, and P53 we used 
+can be downloaded from the following links:
+
+* Sift: https://drive.google.com/open?id=1Q3_dnblolD9GVis7OakP2mrqmBApytEL
+
+* Gist: https://drive.google.com/open?id=1M3hJl5slY_pu50IQ7ie-t9E6RvzMizYT
+
+* Trevi: 
+
+* P53: 
+
 
 Authors
 --------
