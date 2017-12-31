@@ -67,7 +67,7 @@ Journal, which are displayed as follows:
 
 * **Qiang Huang, Jianlin Feng, Yikai Zhang, Qiong Fang, and Wilfred Ng. Query-Aware
 Locality-Sensitive Hashing for Approximate Nearest Neighbor Search. In 
-Proceedings of the VLDB Endowment, 9(1): 1 - 12, 2015.**
+Proceedings of the VLDB Endowment (PVLDB), 9(1): 1 - 12, 2015.**
 
 * **Qiang Huang, Jianlin Feng, Qiong Fang, Wilfred Ng, and Wei Wang. Query-Aware 
 Locality-Sensitive Hashing Scheme for l_p Norm. The VLDB Journal, 26(5): 683 – 
