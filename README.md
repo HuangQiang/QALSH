@@ -29,9 +29,9 @@ can be downloaded from the following links:
 
 * Gist: https://drive.google.com/open?id=1M3hJl5slY_pu50IQ7ie-t9E6RvzMizYT
 
-* Trevi: 
+* Trevi: https://drive.google.com/open?id=1RF1FJKWHv3y7W7aBrewnOMrWR15dNbJ3
 
-* P53: 
+* P53: https://drive.google.com/open?id=15mzraPmxNRzcfhXsd_KWBgKclUFUZQEj
 
 
 Authors
