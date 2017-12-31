@@ -35,7 +35,7 @@ void get_lp_filename(				// get file name of L_p norm
 {
 	char c[20];
 
-	sprintf(c, "%.2f", p);
+	sprintf(c, "%.1f", p);
 	strcat(fname, "L");
 	strcat(fname, c);
 }

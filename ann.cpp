@@ -275,7 +275,7 @@ int lshknn(							// k-nn via qalsh (data in disk)
 	}
 
 	printf("QALSH for c-k-ANN Search: \n");
-	printf("    Top-k\tRatio\t\tI/O\t\tTime (ms)\n");
+	printf("  Top-k\tRatio\t\tI/O\t\tTime (ms)\n");
 	for (int num = 0; num < maxRound; num++) {
 		top_k = kNNs[num];
 
@@ -302,8 +302,7 @@ int lshknn(							// k-nn via qalsh (data in disk)
 		allTime  = (allTime * 1000.0f) / qn;
 		allIO    = (int) ceil((float) allIO / (float) qn);
 
-		printf("    %3d\t\t%.4f\t\t%d\t\t%.2f\n", top_k, allRatio, 
-			allIO, allTime);
+		printf("  %3d\t\t%.4f\t\t%d\t%.2f\n", top_k, allRatio, allIO, allTime);
 		fprintf(fp, "%d\t%f\t%d\t%f\n", top_k, allRatio, allIO, allTime);
 	}
 	printf("\n");
@@ -422,7 +421,7 @@ int linear_scan(					// brute-force linear scan (data in disk)
 	strcat(data_path, "data/");
 
 	printf("Linear Scan Search:\n");
-	printf("    Top-k\tRatio\t\tI/O\t\tTime (ms)\n");
+	printf("  Top-k\tRatio\t\tI/O\t\tTime (ms)\n");
 	for (int round = 0; round < maxRound; round++) {
 		top_k = kNNs[round];
 		allRatio = 0.0f;
@@ -502,7 +501,7 @@ int linear_scan(					// brute-force linear scan (data in disk)
 		allTime  = (allTime * 1000.0f) / qn;
 		allRatio = allRatio / qn;
 									// output results
-		printf("    %3d\t\t%.4f\t\t%d\t\t%.2f\n", top_k, allRatio, 
+		printf("  %3d\t\t%.4f\t\t%d\t%.2f\n", top_k, allRatio, 
 			total_file, allTime);
 		fprintf(ofp, "%d\t%f\t%d\t%f\n", top_k, allRatio, total_file, allTime);
 	}

@@ -24,7 +24,7 @@ const float PI = 3.141592654F;
 
 const float FLOATZERO = 1e-6F;		// accuracy
 
-const long long MAXMEMORY = 8589934591;// max memory, 8 GB
+const long long MAXMEMORY = 1073741823;// max memory, 1 GB
 
 									// max real value
 const float MAXREAL = 3.402823466e+38F;
