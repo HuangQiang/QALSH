@@ -3,7 +3,10 @@
 // -----------------------------------------------------------------------------
 void usage() 						// display the usage of qalsh
 {
-	printf("\nParameters of QALSH:\n"
+	printf("\n"
+		"--------------------------------------------------------------------\n"
+		" Usage of the Package of QALSH for external c-ANN search:\n"
+		"--------------------------------------------------------------------\n"
 		"    -alg  (integer)   options of algorithms (0 - 3)\n"
 		"    -n    (integer)   cardinality of the dataset\n"
 		"    -qn   (integer)   number of queries\n"
@@ -16,27 +19,35 @@ void usage() 						// display the usage of qalsh
 		"    -qs   (string)    file path of the query set\n"
 		"    -ts   (string)    file path of the ground truth set\n"
 		"    -df   (string)    data folder to store new format of data\n"
-		"    -of   (string)    output folder to store info of qalsh\n\n");
-
-	printf("\n"
-		"The options of algorithms (-alg) are:\n"
+		"    -of   (string)    output folder to store info of qalsh\n"
+		"\n"
+		"--------------------------------------------------------------------\n"
+		" The options of algorithms (-alg) are:\n"
+		"--------------------------------------------------------------------\n"
 		"    0 - Ground-Truth\n"
-		"        Parameters: -alg 0 -n -qn -d -p -ds -qs -ts\n\n"
+		"        Parameters: -alg 0 -n -qn -d -p -ds -qs -ts\n"
+		"\n"
 		"    1 - Indexing\n"
-		"        Parameters: -alg 1 -n -d -B -p -z -c -ds -df -of\n\n"
+		"        Parameters: -alg 1 -n -d -B -p -z -c -ds -df -of\n"
+		"\n"
 		"    2 - QALSH\n"
-		"        Parameters: -alg 2 -qn -d -p -qs -ts -df -of\n\n"
+		"        Parameters: -alg 2 -qn -d -p -qs -ts -df -of\n"
+		"\n"
 		"    3 - Linear Scan\n"
-		"        Parameters: -alg 3 -n -qn -d -B -p -qs -ts -df -of\n\n");
-
-	printf("NOTE: Each param is required to be separated by one space.\n\n");
+		"        Parameters: -alg 3 -n -qn -d -B -p -qs -ts -df -of\n"
+		"\n"
+		"--------------------------------------------------------------------\n"
+		" Author:\n"
+		"--------------------------------------------------------------------\n"
+		"    Qiang Huang (huangq2011@gmail.com)                              \n"
+		"\n\n\n");
 }
 
 // -----------------------------------------------------------------------------
 int main(int nargs, char **args)
 {
 	srand((unsigned)time(NULL));	// set the random seed
-	//usage();
+	usage();
 
 	int alg = -1;					// option of algorithm
 	int n = -1;						// cardinality
