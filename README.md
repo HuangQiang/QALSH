@@ -12,6 +12,7 @@ This package is written in the C++ programming language. It provides an
 external LSH scheme (QALSH) for c-Approximate Nearest Neighbor (or simply 
 c-ANN) search under l_p norm, where p \in (0, 2].
 
+
 How to use this Package?
 --------
 
