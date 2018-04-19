@@ -1,8 +1,10 @@
 # QALSH: Query-Aware Locality-Sensitive Hashing
 
-Version: 1.3.0
+Version: 1.3.1
 
-Release date: 3 October 2017
+Release date: 03-10-2017
+
+Last Modified: 20-04-2018
 
 
 Introduction
