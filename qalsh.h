@@ -3,49 +3,22 @@
 
 class BNode;
 class BTree;
+class MinK_List;
 
 // -----------------------------------------------------------------------------
-//  ResultItem: structure of result item which is used to k-nn search
-// -----------------------------------------------------------------------------
-struct ResultItem {
-	int   id_;						// id of the point
-	float dist_;					// l2 distance to query
-
-	void setto(ResultItem * item) {
-		id_   = item->id_;
-		dist_ = item->dist_;
-	}
-};
-
-// -----------------------------------------------------------------------------
-//  PageBuffer: buffer of a page for the ANN search of qalsh
+//  PageBuffer: a buffer of one page for c-k-ANN search
 // -----------------------------------------------------------------------------
 struct PageBuffer {
-	BLeafNode* leaf_node_;			// leaf node (level = 0)
+	BLeafNode *leaf_node_;			// leaf node (level = 0)
 	int index_pos_;					// cur pos of index key
 	int leaf_pos_;					// cur pos of leaf node
 	int size_;						// size for one scan
 };
 
 // -----------------------------------------------------------------------------
-//  HashValue: structure of hash table to store hash values
-// -----------------------------------------------------------------------------
-struct HashValue {
-	int id_;						// object id
-	float proj_;					// projection of the object
-};
-
-// -----------------------------------------------------------------------------
-//  FreqValue: structure of frequency list
-// -----------------------------------------------------------------------------
-struct FreqValue {
-	int id_;						// object id
-	int freq_;						// frequency of the object
-};
-
-// -----------------------------------------------------------------------------
-//  QALSH: structure of qalsh indexed by b+ tree. QALSH is used to solve
-//  the problem of Approximate Nearest Neighbor (ANN) search.
+//  QALSH is used to solve the problem of high-dimensional c-Approximate 
+//  Nearest Neighbor (c-ANN) search, where the hash tables of QALSH are 
+//  indexed by B+ Tree. 
 // -----------------------------------------------------------------------------
 class QALSH {
 public:
@@ -53,140 +26,131 @@ public:
 	~QALSH();						// destructor
 
 	// -------------------------------------------------------------------------
-	void init(						// init params of qalsh
-		int   n,						// number of data points
-		int   d,						// dimension of space
+	int build(						// build index
+		int   n,						// cardinality
+		int   d,						// dimensionality
 		int   B,						// page size
 		float p,						// the p value of L_p norm
 		float zeta,						// symmetric factor of p-stable distr.
 		float ratio,					// approximation ratio
-		char* output_folder);			// folder of info of qalsh
+		const float **data,				// data objects
+		const char *index_path);		// index path
 
 	// -------------------------------------------------------------------------
-	int restore(					// restore params of qalsh
-		float p,						// the p value of L_p norm
-		char* output_folder);			// folder of info of qalsh
+	int load(						// load index
+		const char *index_path);		// index path
 
 	// -------------------------------------------------------------------------
-	int bulkload(					// build b+ trees by bulkloading
-		float** data);					// data set
-
-	// -------------------------------------------------------------------------
-	int knn(						// k-nn search
-		float* query,					// one query point
+	int knn(						// k-NN search
 		int top_k,						// top-k value
-		ResultItem* rslt,				// k-nn results
-		char* data_folder);				// folder to store new format of data
-
-private:
-	// -------------------------------------------------------------------------
-	int   n_pts_;					// number of points
-	int   dim_;						// dimensiona of space
-	int   B_;						// page size in words
+		const float *query,				// query object
+		const char *data_folder,		// data folder
+		MinK_List *list);				// k-NN results (return)
+		
+protected:
+	int   n_pts_;					// cardinality
+	int   dim_;						// dimensionality
+	int   B_;						// page size
 	float p_;						// the p value of L_p norm
 	float zeta_;					// symmetric factor of p-stable distr.
 	float appr_ratio_;				// approximation ratio
+	char  index_path_[300];			// folder path of index
 
-	// -------------------------------------------------------------------------
 	float w_;						// bucket width
 	float p1_;						// positive probability
 	float p2_;						// negative probability
-
 	float alpha_;					// collision threshold percentage
 	float beta_;					// false positive percentage
 	float delta_;					// error probability
+	int   m_;						// number of hashtables
+	int   l_;						// collision threshold
+	float *a_array_;				// hash functions
+	BTree **trees_;					// b-trees
 
-	int m_;							// number of hashtables
-	int l_;							// collision threshold
-
-	float* a_array_;				// hash functions
-	char index_path_[200];			// folder path of index
-
-	int dist_io_;					// io for calculating L2 distance
-	int page_io_;					// io for scanning pages by qalsh
-	BTree** trees_;					// b-trees
+	int   dist_io_;					// io for computing distance
+	int   page_io_;					// io for scanning pages
+	int   *freq_;					// frequency of data objects
+	bool  *checked_;				// whether the data objects are checked
+	bool  *flag_;					// flag of bucket width
+	float *data_;					// one data object
+	float *q_val_;					// hash value of query
+	
+	PageBuffer *lptr_;				// left  pointer of B+ Tree
+	PageBuffer *rptr_;				// right pointer of B+ Tree
 
 	// -------------------------------------------------------------------------
-	void calc_params();				// calc parama of qalsh
+	void calc_params();				// calc parameters
 
-	float calc_l0_prob(				// calc <p1> and <p2> for L1/2 distance
-		float x);						// para
+	// -------------------------------------------------------------------------
+	float calc_l0_prob(				// calc <p1> and <p2> for L_{0.5} distance
+		float x);						// x = w / (2.0 * r)
 
-	float calc_l1_prob(				// calc <p1> and <p2> for L1 distance
-		float x);						// para
+	float calc_l1_prob(				// calc <p1> and <p2> for L_{1.0} distance
+		float x);						// x = w / (2.0 * r)
 
-	float calc_l2_prob(				// calc <p1> and <p2> for L2 distance
-		float x);						// para
+	float calc_l2_prob(				// calc <p1> and <p2> for L_{2.0} distance
+		float x);						// x = w / (2.0 * r)
 
-	void display_params();			// display params
-
+	// -------------------------------------------------------------------------
 	void gen_hash_func();			// generate hash functions
+
+	// -------------------------------------------------------------------------
+	void display();					// display parameters
+
+	// -------------------------------------------------------------------------
+	int bulkload(					// build B+ Trees by bulkloading
+		const float **data);			// data set
 
 	// -------------------------------------------------------------------------
 	float calc_hash_value(			// calc hash value
 		int table_id,					// hash table id
-		float* point);					// one point
-
-	int write_para_file(			// write file of para
-		char* fname);					// file name of para
-
-	int read_para_file(				// read file of para
-		char* fname);					// file name of para
-
-	void get_tree_filename(			// get file name of tree
-		int tree_id,					// tree id
-		char* fname);					// file name of tree (return)
+		const float *point);			// one data object
 
 	// -------------------------------------------------------------------------
-	void init_buffer(				// init page buffer (loc pos of b-treee)
-		PageBuffer* lptr,				// left buffer page (return)
-		PageBuffer* rptr,				// right buffer page (return)
-		float* q_val,					// hash value of query (return)
-		float* query);					// query point
+	int write_params();				// write parameters to disk
+
+	// -------------------------------------------------------------------------
+	int read_params();				// read parameters from disk
+
+	// -------------------------------------------------------------------------
+	void get_tree_filename(			// get file name of tree
+		int  tree_id,					// tree id
+		char *fname);					// file name of tree (return)
+
+	// -------------------------------------------------------------------------
+	void init_search_params(		// init parameters for k-NN search
+		const float *query);			// query object
 
 	// -------------------------------------------------------------------------
 	float find_radius(				// find proper radius
-		PageBuffer* lptr,				// left page buffer
-		PageBuffer* rptr,				// right page buffer
-		float* q_val);					// hash value of query
+		const float *q_val,				// hash value of query
+		const PageBuffer *lptr,			// left page buffer
+		const PageBuffer *rptr);		// right page buffer
 
 	// -------------------------------------------------------------------------
 	float update_radius(			// update radius
-		PageBuffer* lptr,				// left page buffer
-		PageBuffer* rptr,				// right page buffer
-		float* q_val,					// hash value of query
-		float  old_radius);				// old radius
-
-	// -------------------------------------------------------------------------
-	float update_result(			// update k-nn results
-		ResultItem* rslt,				// k-nn results
-		ResultItem* item,				// input result
-		int topk);						// top-k value
+		float old_radius,				// old radius
+		const float *q_val,				// hash value of query
+		const PageBuffer *lptr,			// left page buffer
+		const PageBuffer *rptr);		// right page buffer
 
 	// -------------------------------------------------------------------------
 	void update_left_buffer(		// update left buffer
-		PageBuffer* lptr,				// left  buffer
-		const PageBuffer* rptr);		// right buffer
-
-	void update_right_buffer(		// update right buffer
-		const PageBuffer* lptr,			// left  buffer
-		PageBuffer* rptr);				// right buffer
+		const PageBuffer *rptr,			// right buffer
+		PageBuffer *lptr);				// left buffer (return)
 
 	// -------------------------------------------------------------------------
-	float calc_proj_dist(			// calc proj dist
-		const PageBuffer* ptr,			// page buffer
-		float q_val);					// hash value of query
+	void update_right_buffer(		// update right buffer
+		const PageBuffer *lptr,			// left buffer
+		PageBuffer* rptr);				// right buffer (return)
+
+	// -------------------------------------------------------------------------
+	float calc_dist(				// calc projected distance
+		float q_val,					// hash value of query
+		const PageBuffer *ptr);			// page buffer
+	
+	// -------------------------------------------------------------------------
+	void delete_tree_ptr();			// delete the pointers of B+ Trees
 };
 
-// -----------------------------------------------------------------------------
-int HashValueQsortComp(				// compare function for qsort
-	const void* e1,						// 1st element
-	const void* e2);					// 2nd element
-
-// -----------------------------------------------------------------------------
-int FreqValueQsortComp(				// compare function for qsort
-	const void* e1,						// 1st element
-	const void* e2);					// 2nd element
-
-
-#endif
+#endif // __QALSH_H

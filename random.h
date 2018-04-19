@@ -1,9 +1,8 @@
 #ifndef __RANDOM_H
 #define __RANDOM_H
 
-
 // -----------------------------------------------------------------------------
-//  Functions used for generating random variables (r.v.).
+//  functions used for generating random variables (r.v.)
 // -----------------------------------------------------------------------------
 float uniform(						// r.v. from Uniform(min, max)
 	float min,							// min value
@@ -31,10 +30,9 @@ float p_stable(						// r.v. from p-satble distr.
 	float gamma,						// scale factor (gamma > 0)
 	float delta);						// location
 
-
 // -----------------------------------------------------------------------------
-//  Functions used for calculating probability distribution function (pdf) and 
-//  cumulative distribution function (cdf).
+//  functions used for calculating probability distribution function (pdf) and 
+//  cumulative distribution function (cdf)
 // -----------------------------------------------------------------------------
 float gaussian_pdf(					// pdf of N(0, 1)
 	float x);							// variable
@@ -57,7 +55,6 @@ float levy_pdf(						// pdf of Levy(1, 0)
 float levy_cdf(						// cdf of Levy(0, 1) in range (0, x]
 	float x,							// integral border (x > 0)
 	float step = 0.001f);				// step increment
-
 
 // -----------------------------------------------------------------------------
 //  query-oblivious and query-aware collision probability under gaussian
@@ -88,26 +85,25 @@ float new_levy_prob(				// calc new levy probability
 
 // -----------------------------------------------------------------------------
 void orig_stable_prob(				// calc orig stable probability
-	float  p,							// the p value, where p in (0, 2]
-	float  zeta,						// symmetric factor (zeta in [-1, 1])
-	float  ratio,						// approximation ratio
-	float  radius,						// radius
-	float  w,							// bucket width
-	int    num,							// number of repetition
-	float& p1,							// p1 = p(w / r), returned
-	float& p2);							// p2 = p(w / (c * r)), returned
+	float p,							// the p value, where p in (0, 2]
+	float zeta,							// symmetric factor (zeta in [-1, 1])
+	float ratio,						// approximation ratio
+	float radius,						// radius
+	float w,							// bucket width
+	int   num,							// number of repetition
+	float &p1,							// p1 = p(w / r), returned
+	float &p2);							// p2 = p(w / (c * r)), returned
 
 // -----------------------------------------------------------------------------
 void new_stable_prob(				// calc new stable probability
-	float  p,							// the p value, where p in (0, 2]
-	float  zeta,						// symmetric factor (zeta in [-1, 1])
-	float  ratio,						// approximation ratio
-	float  radius,						// radius
-	float  w,							// bucket width
-	int    num,							// number of repetition
-	float& p1,							// p1 = p(w / (2 *r)), returned
-	float& p2);							// p2 = p(w / (2 * c * r)), returned
-
+	float p,							// the p value, where p in (0, 2]
+	float zeta,							// symmetric factor (zeta in [-1, 1])
+	float ratio,						// approximation ratio
+	float radius,						// radius
+	float w,							// bucket width
+	int   num,							// number of repetition
+	float &p1,							// p1 = p(w / (2 *r)), returned
+	float &p2);							// p2 = p(w / (2 * c * r)), returned
 
 // -----------------------------------------------------------------------------
 //  probability vs. w for a fixed ratio c
@@ -120,7 +116,6 @@ void prob_of_cauchy();				// curve of p1, p2 vs. w under cauchy
 // -----------------------------------------------------------------------------
 void prob_of_levy();				// curve of p1, p2 vs. w under levy
 
-
 // -----------------------------------------------------------------------------
 //  the difference (p1 - p2) vs. w for a fixed ratio
 // -----------------------------------------------------------------------------
@@ -131,7 +126,6 @@ void diff_prob_of_cauchy();			// curve of p1 - p2 vs. w under cauchy
 
 // -----------------------------------------------------------------------------
 void diff_prob_of_levy();			// curve of p1 - p2 vs. w under levy
-
 
 // -----------------------------------------------------------------------------
 //  rho = log(1/p1) / log(1/p2) vs. w for a fixed ratio c
@@ -144,4 +138,4 @@ void rho_of_cauchy();				// curve of rho vs. w under cauchy
 // -----------------------------------------------------------------------------
 void rho_of_levy();					// curve of rho vs. w under levy
 
-#endif
+#endif // __RANDOM_H
