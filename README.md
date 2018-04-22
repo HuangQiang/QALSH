@@ -10,18 +10,18 @@ Last Modified: 20-04-2018
 Introduction
 --------
 
-This package is written in the C++ programming language. It provides an 
-external LSH scheme (QALSH) for c-Approximate Nearest Neighbor (or simply 
-c-ANN) search under l_p norm, where p \in (0, 2].
+This package is written in the C++ programming language. It provides two 
+external LSH schemes QALSH and QALSH+ for c-Approximate Nearest Neighbor 
+(or simply c-ANN) search under l_p norm, where p \in (0, 2].
 
 
 How to use this Package?
 --------
 
 We provide a Makefile and a script (i.e., run_mnist.sh) as a running example 
-for comipling and running this package. Before start running this package, 
-please ensure the input format of the dataset and query set is correct. We 
-provide a sample dataset and query set (i.e., Mnist) for your reference.
+for comipling and running the package. Before running this package, please 
+ensure the input format of the dataset and query set is correct. We provide 
+a sample dataset and query set (i.e., Mnist) for your reference.
 
 We also provide the scripts (i.e., run_sift.sh, run_gist.sh, run_trevi.sh, 
 and run_p53.sh) for the users who would like to reproduce our results presented 
@@ -76,5 +76,5 @@ Proceedings of the VLDB Endowment (PVLDB), 9(1): 1 - 12, 2015.**
 Locality-Sensitive Hashing Scheme for l_p Norm. The VLDB Journal, 26(5): 683 – 
 708, 2017.**
 
-If you use the package for publications, please cite the papers above.
+If you use the package for publications, please cite the papers above. Thank you.
 
