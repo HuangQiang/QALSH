@@ -8,10 +8,8 @@ float uniform(						// r.v. from Uniform(min, max)
 	float max)							// max value
 {
 	assert(min <= max);
-
 	float x = min + (max - min) * (float)rand() / (float)RAND_MAX;
 	assert(x >= min && x <= max);
-
 	return x;
 }
 
@@ -24,7 +22,6 @@ float gaussian(						// r.v. from N(mean, sigma)
 	float sigma)						// stanard deviation (scale > 0)
 {
 	assert(sigma > 0.0f);
-
 	float u1 = -1.0f;
 	float u2 = -1.0f;
 	do {
@@ -45,7 +42,6 @@ float cauchy(						// r.v. from Cauchy(gamma, delta)
 	float delta)						// location
 {
 	assert(gamma > 0.0f);
-
 	float u = -1.0f;
 	do {
 		u = uniform(0.0f, 1.0f);
@@ -74,8 +70,7 @@ float levy(							// r.v. from Levy(gamma, delta)
 	float delta)						// location
 {
 	assert(gamma > 0.0f);
-
-	float g;
+	float g = -1.0f;
 	do {
 		g = gaussian(0.0f, 1.0f);
 	} while (fabs(g) < FLOATZERO);
@@ -176,7 +171,6 @@ float new_gaussian_cdf(				// cdf of N(0, 1) in range [-x, x]
 	float step)							// step increment
 {
 	assert(x > 0.0f);
-
 	float ret = 0.0f;
 	for (float i = -x; i <= x; i += step) {
 		ret += step * gaussian_pdf(i);
@@ -198,7 +192,6 @@ float levy_cdf(						// cdf of Levy(0, 1) in range (0, x]
 	float step)							// step increment
 {
 	assert(x > 0.0f);
-
 	float ret = 0.0f;
 	for (float i = step; i < x; i += step) {
 		ret += (step * levy_pdf(i));
@@ -214,9 +207,9 @@ float orig_gaussian_prob(			// calc original gaussian probability
 	float x)							// x = w / r
 {
 	float norm = gaussian_cdf(-x, 0.001F);
-	float tmp = 2.0F * (1.0F - exp(-x * x / 2.0F)) / (sqrt(2.0F * PI) * x);
+	float tmp  = 2.0F * (1.0F - exp(-x * x / 2.0F)) / (sqrt(2.0F * PI) * x);
+	float p    = 1.0F - 2.0F * norm - tmp;
 
-	float p = 1.0F - 2.0F * norm - tmp;
 	return p;
 }
 
@@ -248,7 +241,7 @@ float new_cauchy_prob(				// calc new cauchy probability
 float orig_levy_prob(				// calc original levy probability
 	float x)							// x = w / r
 {
-	float p = 0.0F;
+	float p    = 0.0F;
 	float step = 0.001F;
 	for (float i = step; i < x; i += step) {
 		p += (step * levy_pdf(i) * (1.0F - i / x));

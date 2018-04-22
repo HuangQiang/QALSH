@@ -132,29 +132,26 @@ float calc_lp_dist(					// calc L_{p} norm
 }
 
 // -----------------------------------------------------------------------------
-int read_set(						// read (data or query) set from disk
-	int   n,							// number of data objects
+int read_data(						// read data/query set from disk
+	int   n,							// number of data/query objects
 	int   d,							// dimensionality
-	const char *set,					// address of dataset
-	float **points)						// data or queries (return)
+	const char *fname,					// address of data/query set
+	float **data)						// data/query objects (return)
 {
-	int i = 0;
-	int j = 0;
-	
-	FILE *fp = fopen(set, "r");
+	FILE *fp = fopen(fname, "r");
 	if (!fp) {
-		printf("Could not open %s.\n", set);
+		printf("Could not open %s\n", fname);
 		return 1;
 	}
 
-	i = 0;
+	int i   = 0;
+	int tmp = -1;
 	while (!feof(fp) && i < n) {
-		fscanf(fp, "%d", &j);
-		for (j = 0; j < d; ++j) {
-			fscanf(fp, " %f", &points[i][j]);
+		fscanf(fp, "%d", &tmp);
+		for (int j = 0; j < d; ++j) {
+			fscanf(fp, " %f", &data[i][j]);
 		}
 		fscanf(fp, "\n");
-
 		++i;
 	}
 	assert(feof(fp) && i == n);
@@ -194,11 +191,11 @@ int write_data_new_form(			// write dataset with new format
 	int left  = 0;
 	int right = 0;
 	for (int i = 0; i < total_file; ++i) {
-		get_data_filename(i, data_path, fname);
-
 		// ---------------------------------------------------------------------
 		//  write data to buffer
 		// ---------------------------------------------------------------------
+		get_data_filename(i, data_path, fname);
+
 		left = i * num;
 		right = left + num;
 		if (right > n) right = n;	
@@ -233,7 +230,7 @@ void write_data_to_buffer(			// write data to buffer
 	int   left,							// left data id
 	int   right,						// right data id
 	const float **data,					// data set
-	char  *buffer)						// buffer to store data
+	char  *buffer)						// buffer to store data (return)
 {
 	int c = 0;
 	for (int i = left; i < right; ++i) {
@@ -255,7 +252,6 @@ int write_buffer_to_page(			// write buffer to one page
 	FILE *fp = fopen(fname, "wb");	// open data file to write
 	fwrite(buffer, B, 1, fp);
 	fclose(fp);
-
 	return 0;
 }
 
@@ -272,7 +268,6 @@ int read_data_new_format(			// read data with new format from disk
 	// -------------------------------------------------------------------------
 	char fname[200];
 	char data_path[200];
-
 	strcpy(data_path, output_path);
 	strcat(data_path, "data/");
 									
@@ -305,9 +300,9 @@ int read_data_new_format(			// read data with new format from disk
 
 // -----------------------------------------------------------------------------
 int read_buffer_from_page(			// read buffer from page
-	int   B,								// page size
+	int   B,							// page size
 	const char *fname,					// file name of data
-	char  *buffer)						// buffer to store data
+	char  *buffer)						// buffer to store data (return)
 {
 	assert(fname != NULL && buffer != NULL);
 
@@ -323,13 +318,42 @@ void read_data_from_buffer(			// read data from buffer
 	int   index,						// index of data in buffer
 	int   d,							// dimensionality
 	const char *buffer,					// buffer to store data
-	float *data)						// data set
+	float *data)						// data set (return)
 {
 	int c = index * d * SIZEFLOAT;
 	for (int i = 0; i < d; ++i) {
 		memcpy(&data[i], &buffer[c], SIZEFLOAT);
 		c += SIZEFLOAT;
 	}
+}
+
+// -----------------------------------------------------------------------------
+int read_ground_truth(				// read ground truth results from disk
+	int qn,								// number of query objects
+	const char *fname,					// address of truth set
+	float **R)							// ground truth results (return)
+{
+	FILE *fp = fopen(fname, "r");
+	if (!fp) {
+		printf("Could not open %s\n", fname);
+		return 1;
+	}
+
+	int tmp1 = -1;
+	int tmp2 = -1;
+	fscanf(fp, "%d %d\n", &tmp1, &tmp2);
+	assert(tmp1 == qn && tmp2 == MAXK);
+
+	for (int i = 0; i < qn; ++i) {
+		fscanf(fp, "%d", &tmp1);
+		for (int j = 0; j < MAXK; ++j) {
+			fscanf(fp, " %f", &R[i][j]);
+		}
+		fscanf(fp, "\n");
+	}
+	fclose(fp);
+
+	return 0;
 }
 
 // -----------------------------------------------------------------------------
@@ -369,8 +393,7 @@ int linear(							// linear scan search
 		//  read one page of data into buffer
 		// ---------------------------------------------------------------------
 		char fname[200];
-		get_data_filename(i, data_path, fname);
-		
+		get_data_filename(i, data_path, fname);	
 		read_buffer_from_page(B, fname, buffer);
 
 		// ---------------------------------------------------------------------

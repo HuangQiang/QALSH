@@ -36,6 +36,7 @@ const int SIZEFLOAT = (int) sizeof(float);
 const float E  = 2.7182818F;
 const float PI = 3.141592654F;
 const float FLOATZERO = 1e-6F;
+const float ANGLE = PI / 8.0f;
 
 const int MAXK = 100;
 const int CANDIDATES = 100;

@@ -25,7 +25,8 @@ QALSH::QALSH()						// constructor
 	page_io_     = -1;
 	freq_        = NULL;
 	checked_     = NULL;
-	flag_        = NULL;
+	bucket_flag_ = NULL;
+	range_flag_  = NULL;
 	data_        = NULL;
 	q_val_       = NULL;
 	lptr_        = NULL;
@@ -51,8 +52,11 @@ QALSH::~QALSH()						// destructor
 	if (checked_ != NULL) {
 		delete[] checked_; checked_ = NULL;
 	}
-	if (flag_ != NULL) {
-		delete[] flag_; flag_ = NULL;
+	if (bucket_flag_ != NULL) {
+		delete[] bucket_flag_; bucket_flag_ = NULL;
+	}
+	if (range_flag_ != NULL) {
+		delete[] range_flag_; range_flag_ = NULL;
 	}
 	if (data_ != NULL) {
 		delete[] data_; data_ = NULL;
@@ -97,12 +101,14 @@ int QALSH::build(					// build index
 	// -------------------------------------------------------------------------
 	calc_params();
 	gen_hash_func();
-	display();
+	// display();
 
 	// -------------------------------------------------------------------------
 	//  bulkloading
 	// -------------------------------------------------------------------------
 	bulkload(data);
+
+	return 0;
 }
 
 // -----------------------------------------------------------------------------
@@ -165,13 +171,14 @@ void QALSH::calc_params()			// calc params of qalsh
 	m_ = (int) ceil((para1 + para2) * (para1 + para2) / para3);
 	l_ = (int) ceil(alpha_ * m_);
 
-	freq_    = new int[n_pts_];
-	checked_ = new bool[n_pts_];
-	flag_    = new bool[m_];
-	data_    = new float[dim_];
-	q_val_   = new float[m_];
-	lptr_    = new PageBuffer[m_];
-	rptr_    = new PageBuffer[m_];
+	freq_        = new int[n_pts_];
+	checked_     = new bool[n_pts_];
+	bucket_flag_ = new bool[m_];
+	range_flag_  = new bool[m_];
+	data_        = new float[dim_];
+	q_val_       = new float[m_];
+	lptr_        = new PageBuffer[m_];
+	rptr_        = new PageBuffer[m_];
 }
 
 // -----------------------------------------------------------------------------
@@ -198,18 +205,19 @@ float QALSH::calc_l2_prob(			// calc prob <p1_> and <p2_> of L2 dist
 // -----------------------------------------------------------------------------
 void QALSH::display()				// display parameters
 {
-	printf("Parameters of QALSH (L_%.1f Distance):\n", p_);
+	printf("Parameters of QALSH:\n");
 	printf("    n     = %d\n", n_pts_);
 	printf("    d     = %d\n", dim_);
 	printf("    B     = %d\n", B_);
-	printf("    ratio = %f\n", appr_ratio_);
+	printf("    p     = %.1f\n", p_);
+	printf("    zeta  = %.1f\n", zeta_);
+	printf("    ratio = %.1f\n", appr_ratio_);
 	printf("    w     = %f\n", w_);
 	printf("    p1    = %f\n", p1_);
 	printf("    p2    = %f\n", p2_);
 	printf("    alpha = %f\n", alpha_);
 	printf("    beta  = %f\n", beta_);
 	printf("    delta = %f\n", delta_);
-	printf("    zeta  = %f\n", zeta_);
 	printf("    m     = %d\n", m_);
 	printf("    l     = %d\n", l_);
 	printf("    path  = %s\n", index_path_);
@@ -295,29 +303,25 @@ int QALSH::write_params()			// write parameters to disk
 		return 1;
 	}
 
-	fprintf(fp, "n = %d\n", n_pts_);
-	fprintf(fp, "d = %d\n", dim_);
-	fprintf(fp, "B = %d\n", B_);
-
+	fprintf(fp, "n     = %d\n", n_pts_);
+	fprintf(fp, "d     = %d\n", dim_);
+	fprintf(fp, "B     = %d\n", B_);
+	fprintf(fp, "p     = %f\n", p_);
+	fprintf(fp, "zeta  = %f\n", zeta_);
 	fprintf(fp, "ratio = %f\n", appr_ratio_);
-	fprintf(fp, "w = %f\n", w_);
-	fprintf(fp, "p1 = %f\n", p1_);
-	fprintf(fp, "p2 = %f\n", p2_);
-
-	fprintf(fp, "p = %f\n", p_);
+	fprintf(fp, "w     = %f\n", w_);
+	fprintf(fp, "p1    = %f\n", p1_);
+	fprintf(fp, "p2    = %f\n", p2_);
 	fprintf(fp, "alpha = %f\n", alpha_);
-	fprintf(fp, "beta = %f\n", beta_);
+	fprintf(fp, "beta  = %f\n", beta_);
 	fprintf(fp, "delta = %f\n", delta_);
-	fprintf(fp, "zeta = %f\n", zeta_);
-
-	fprintf(fp, "m = %d\n", m_);
-	fprintf(fp, "l = %d\n", l_);
+	fprintf(fp, "m     = %d\n", m_);
+	fprintf(fp, "l     = %d\n", l_);
 
 	int count = 0;
 	for (int i = 0; i < m_; ++i) {
-		fprintf(fp, "%f", a_array_[count++]);
-		for (int j = 1; j < dim_; ++j) {
-			fprintf(fp, " %f", a_array_[count++]);
+		for (int j = 0; j < dim_; ++j) {
+			fprintf(fp, "%f ", a_array_[count++]);
 		}
 		fprintf(fp, "\n");
 	}
@@ -350,19 +354,9 @@ void QALSH::get_tree_filename(		// get file name of b-tree
 int QALSH::load(					// load index
 	const char *index_path)				// index path
 {
-	// -------------------------------------------------------------------------
-	//  init parameters
-	// -------------------------------------------------------------------------
 	strcpy(index_path_, index_path);
-
-	// -------------------------------------------------------------------------
-	//  read parameters from disk
-	// -------------------------------------------------------------------------
 	if (read_params()) return 1;
 
-	// -------------------------------------------------------------------------
-	//  read hash tables from disk
-	// -------------------------------------------------------------------------
 	char fname[200];
 	trees_ = new BTree*[m_];
 	for (int i = 0; i < m_; ++i) {
@@ -388,41 +382,39 @@ int QALSH::read_params()			// read parameters from disk
 		return 1;
 	}
 
-	fscanf(fp, "n = %d\n", &n_pts_);
-	fscanf(fp, "d = %d\n", &dim_);
-	fscanf(fp, "B = %d\n", &B_);
-
+	fscanf(fp, "n     = %d\n", &n_pts_);
+	fscanf(fp, "d     = %d\n", &dim_);
+	fscanf(fp, "B     = %d\n", &B_);
+	fscanf(fp, "p     = %f\n", &p_);
+	fscanf(fp, "zeta  = %f\n", &zeta_);
 	fscanf(fp, "ratio = %f\n", &appr_ratio_);
-	fscanf(fp, "w = %f\n", &w_);
-	fscanf(fp, "p1 = %f\n", &p1_);
-	fscanf(fp, "p2 = %f\n", &p2_);
-
-	fscanf(fp, "p = %f\n", &p_);
+	fscanf(fp, "w     = %f\n", &w_);
+	fscanf(fp, "p1    = %f\n", &p1_);
+	fscanf(fp, "p2    = %f\n", &p2_);
 	fscanf(fp, "alpha = %f\n", &alpha_);
-	fscanf(fp, "beta = %f\n", &beta_);
+	fscanf(fp, "beta  = %f\n", &beta_);
 	fscanf(fp, "delta = %f\n", &delta_);
-	fscanf(fp, "zeta = %f\n", &zeta_);
-
-	fscanf(fp, "m = %d\n", &m_);
-	fscanf(fp, "l = %d\n", &l_);
+	fscanf(fp, "m     = %d\n", &m_);
+	fscanf(fp, "l     = %d\n", &l_);
 	
 	a_array_ = new float[m_ * dim_];
 	int count = 0;
 	for (int i = 0; i < m_; ++i) {
 		for (int j = 0; j < dim_; ++j) {
-			fscanf(fp, "%f", &a_array_[count++]);
+			fscanf(fp, "%f ", &a_array_[count++]);
 		}
 		fscanf(fp, "\n");
 	}
 	fclose(fp);
 
-	freq_    = new int[n_pts_];
-	checked_ = new bool[n_pts_];
-	flag_    = new bool[m_];
-	data_    = new float[dim_];
-	q_val_   = new float[m_];
-	lptr_    = new PageBuffer[m_];
-	rptr_    = new PageBuffer[m_];
+	freq_        = new int[n_pts_];
+	checked_     = new bool[n_pts_];
+	bucket_flag_ = new bool[m_];
+	range_flag_  = new bool[m_];
+	data_        = new float[dim_];
+	q_val_       = new float[m_];
+	lptr_        = new PageBuffer[m_];
+	rptr_        = new PageBuffer[m_];
 
 	return 0;
 }
@@ -443,7 +435,7 @@ int QALSH::knn(						// k-NN search
 	//  k-NN search
 	// -------------------------------------------------------------------------
 	int candidates = CANDIDATES + top_k - 1; // threshold of candidates
-	int num_flag   = 0;				// used for bucket bound
+	int num_bucket = 0;				// used for bucket bound
 	int id         = -1;			// data object id
 	int count      = -1;			// count size in one page
 	int start      = -1;			// start position
@@ -461,15 +453,15 @@ int QALSH::knn(						// k-NN search
 		// ---------------------------------------------------------------------
 		//  step 1: initialize the stop condition for current round
 		// ---------------------------------------------------------------------
-		num_flag = 0;
-		for (int i = 0; i < m_; ++i) flag_[i] = true;
+		num_bucket = 0;
+		for (int i = 0; i < m_; ++i) bucket_flag_[i] = true;
 
 		// ---------------------------------------------------------------------
 		//  step 2: find frequent objects
 		// ---------------------------------------------------------------------
-		while (num_flag < m_) {
+		while (num_bucket < m_) {
 			for (int i = 0; i < m_; ++i) {
-				if (!flag_[i]) continue;
+				if (!bucket_flag_[i]) continue;
 
 				// -------------------------------------------------------------
 				//  step 2.1: compute <ldist> and <rdist>
@@ -493,9 +485,7 @@ int QALSH::knn(						// k-NN search
 					start = end - count;
 					for (int j = end; j > start; --j) {
 						id = lptr_[i].leaf_node_->get_entry_id(j);
-						if (checked_[id]) continue;
-
-						if (++freq_[id] > l_) {
+						if (++freq_[id] > l_ && !checked_[id]) {
 							checked_[id] = true;
 							read_data_new_format(id, dim_, B_, data_folder, data_);
 
@@ -513,9 +503,7 @@ int QALSH::knn(						// k-NN search
 					end   = start + count;
 					for (int j = start; j < end; ++j) {
 						id = rptr_[i].leaf_node_->get_entry_id(j);
-						if (checked_[id]) continue;
-
-						if (++freq_[id] > l_) {
+						if (++freq_[id] > l_ && !checked_[id]) {
 							checked_[id] = true;
 							read_data_new_format(id, dim_, B_, data_folder, data_);
 
@@ -528,21 +516,157 @@ int QALSH::knn(						// k-NN search
 					update_right_buffer(&lptr_[i], &rptr_[i]);
 				}
 				else {
-					flag_[i] = false;
-					num_flag++;
+					bucket_flag_[i] = false;
+					num_bucket++;
 				}
-				if (num_flag >= m_ || dist_io_ >= candidates) break;
+				if (num_bucket >= m_ || dist_io_ >= candidates) break;
 			}
-			if (num_flag >= m_ || dist_io_ >= candidates) break;
+			if (num_bucket >= m_ || dist_io_ >= candidates) break;
 		}
 		// ---------------------------------------------------------------------
-		//  stop condition 1 & 2
+		//  step 3: stop conditions 1 & 2
 		// ---------------------------------------------------------------------
 		if (knn_dist < appr_ratio_ * radius && dist_io_ >= top_k) break;
 		if (dist_io_ >= candidates) break;
 
 		// ---------------------------------------------------------------------
-		//  step 3: auto-update <radius>
+		//  step 4: auto-update <radius>
+		// ---------------------------------------------------------------------
+		radius = update_radius(radius, q_val_, lptr_, rptr_);
+		bucket = radius * w_ / 2.0f;
+	}
+	delete_tree_ptr();	
+
+	return page_io_ + dist_io_;
+}
+
+// -----------------------------------------------------------------------------
+int QALSH::knn(						// k-NN search
+	int top_k,							// top-k value
+	float R,							// limited search range
+	const float *query,					// query object
+	const vector<int> &object_id,		// object id mapping
+	const char *data_folder,			// data folder
+	MinK_List *list)					// k-NN results (return)
+{
+	// -------------------------------------------------------------------------
+	//  initialize parameters for k-NN search
+	// -------------------------------------------------------------------------
+	init_search_params(query);
+
+	// -------------------------------------------------------------------------
+	//  k-NN search
+	// -------------------------------------------------------------------------
+	int candidates = CANDIDATES + top_k - 1; // threshold of candidates
+	int num_bucket = 0;				// used for bucket width bound
+	int num_range  = 0;				// used for search range bound
+	int id         = -1;			// current object id
+	int oid        = -1;			// data object id
+	int count      = -1;			// count size in one page
+	int start      = -1;			// start position
+	int end        = -1;			// end position
+
+	float dist     = -1.0f;			// real distance between data and query
+	float ldist    = -1.0f;			// left  projected distance with query
+	float rdist    = -1.0f;			// right projected distance with query
+
+	float radius   = find_radius(q_val_, lptr_, rptr_);
+	float bucket   = w_ * radius / 2.0f;
+	float range    = -1.0f;
+
+	if (R > MAXREAL - 1.0f) range = MAXREAL;
+	else range = R * w_ / 2.0f;
+
+	while (true) {
+		// ---------------------------------------------------------------------
+		//  step 1: initialize the stop condition for current round
+		// ---------------------------------------------------------------------
+		num_bucket = 0;
+		for (int i = 0; i < m_; ++i) bucket_flag_[i] = true;
+
+		// ---------------------------------------------------------------------
+		//  step 2: find frequent objects
+		// ---------------------------------------------------------------------
+		while (num_bucket < m_ && num_range < m_) {
+			for (int i = 0; i < m_; ++i) {
+				if (!bucket_flag_[i]) continue;
+
+				// -------------------------------------------------------------
+				//  step 2.1: compute <ldist> and <rdist>
+				// -------------------------------------------------------------
+				ldist = MAXREAL;
+				if (lptr_[i].size_ != -1) ldist = calc_dist(q_val_[i], &lptr_[i]);
+
+				rdist = MAXREAL;
+				if (rptr_[i].size_ != -1) rdist = calc_dist(q_val_[i], &rptr_[i]);
+
+				// -------------------------------------------------------------
+				//  step 2.2: determine the closer direction (left or right)
+				//  and do collision counting to find frequent objects.
+				//
+				//  for the frequent object, we calc the L2 distance with
+				//  query, and update the k-nn result.
+				// -------------------------------------------------------------
+				if (ldist < bucket && ldist < range && ldist <= rdist) {
+					count = lptr_[i].size_;
+					end   = lptr_[i].leaf_pos_;
+					start = end - count;
+
+					for (int j = end; j > start; --j) {
+						id = lptr_[i].leaf_node_->get_entry_id(j);
+						if (++freq_[id] > l_ && !checked_[id]) {
+							checked_[id] = true;
+							oid = object_id[id];
+							read_data_new_format(oid, dim_, B_, data_folder, data_);
+
+							dist = calc_lp_dist(dim_, p_, data_, query);
+							list->insert(dist, oid);
+
+							if (++dist_io_ >= candidates) break;
+						}
+					}
+					update_left_buffer(&rptr_[i], &lptr_[i]);
+				}
+				else if (rdist < bucket && rdist < range && ldist > rdist) {
+					count = rptr_[i].size_;
+					start = rptr_[i].leaf_pos_;
+					end   = start + count;
+					for (int j = start; j < end; ++j) {
+						id = rptr_[i].leaf_node_->get_entry_id(j);
+						if (++freq_[id] > l_ && !checked_[id]) {
+							checked_[id] = true;
+							oid = object_id[id];
+							read_data_new_format(oid, dim_, B_, data_folder, data_);
+
+							dist = calc_lp_dist(dim_, p_, data_, query);
+							list->insert(dist, oid);
+
+							if (++dist_io_ >= candidates) break;
+						}
+					}
+					update_right_buffer(&lptr_[i], &rptr_[i]);
+				}
+				else {
+					bucket_flag_[i] = false;
+					num_bucket++;
+					if (ldist >= range && rdist >= range && range_flag_[i]) {
+						range_flag_[i] = false;
+						num_range++;
+					}
+				}
+				if (num_bucket >= m_ || num_range >= m_) break;
+				if (dist_io_ >= candidates) break;
+			}
+			if (num_bucket >= m_ || num_range >= m_) break;
+			if (dist_io_ >= candidates) break;
+		}
+		// ---------------------------------------------------------------------
+		//  step 3: stop conditions 1 & 2
+		// ---------------------------------------------------------------------
+		if (dist_io_ >= candidates || num_range >= m_) break;
+
+		// ---------------------------------------------------------------------
+		//  step 4: auto-update <radius>
 		// ---------------------------------------------------------------------
 		radius = update_radius(radius, q_val_, lptr_, rptr_);
 		bucket = radius * w_ / 2.0f;
@@ -565,25 +689,24 @@ void QALSH::init_search_params(		// init parameters for k-NN search
 	}
 
 	for (int i = 0; i < m_; ++i) {
+		range_flag_[i]      = true;
 		lptr_[i].leaf_node_ = NULL;
 		lptr_[i].index_pos_ = -1;
 		lptr_[i].leaf_pos_  = -1;
 		lptr_[i].size_      = -1;
-
 		rptr_[i].leaf_node_ = NULL;
 		rptr_[i].index_pos_ = -1;
-		rptr_[i].leaf_pos_ = -1;
-		rptr_[i].size_ = -1;
+		rptr_[i].leaf_pos_  = -1;
+		rptr_[i].size_      = -1;
 	}
 
-	int  block      = -1;			// variables for index node
-	int  follow     = -1;
-	bool lescape    = false;
+	BIndexNode *index_node = NULL;
+	int  block       = -1;			// variables for index node
+	int  follow      = -1;
+	bool lescape     = false;
 	int  pos         = -1;			// variables for leaf node
 	int  increment   = -1;
 	int  num_entries = -1;
-
-	BIndexNode *index_node = NULL;
 
 	for (int i = 0; i < m_; ++i) {
 		q_val_[i] = calc_hash_value(i, query);
@@ -793,36 +916,37 @@ float QALSH::update_radius(			// update radius
 	const PageBuffer *lptr,				// left page buffer
 	const PageBuffer *rptr)				// right page buffer
 {
-	float dist = 0.0f;
+	// -------------------------------------------------------------------------
+	//  find an array of projected distance which is closest to the query in
+	//  each of <m> hash tables 
+	// -------------------------------------------------------------------------
 	vector<float> list;
-
-	for (int i = 0; i < m_; ++i) {	// find an array of proj dist
+	for (int i = 0; i < m_; ++i) {
 		if (lptr[i].size_ != -1) {
-			dist = calc_dist(q_val[i], &lptr[i]);
-			list.push_back(dist);
+			list.push_back(calc_dist(q_val[i], &lptr[i]));
 		}
 		if (rptr[i].size_ != -1) {
-			dist = calc_dist(q_val[i], &rptr[i]);
-			list.push_back(dist);
+			list.push_back(calc_dist(q_val[i], &rptr[i]));
 		}
 	}
-	sort(list.begin(), list.end());	// sort the array
 
-	int num = (int)list.size();
+	// -------------------------------------------------------------------------
+	//  sort the array in ascending order 
+	// -------------------------------------------------------------------------
+	sort(list.begin(), list.end());
+
+	// -------------------------------------------------------------------------
+	//  find the median distance and return the new radius
+	// -------------------------------------------------------------------------
+	int num = (int) list.size();
 	if (num == 0) return appr_ratio_ * old_radius;
 
-	if (num % 2 == 0) {				// find median dist
-		dist = (list[num / 2 - 1] + list[num / 2]) / 2.0f;
-	}
-	else {
-		dist = list[num / 2];
-	}
-	list.clear();
-
-	int kappa = (int)ceil(log(2.0f * dist / w_) / log(appr_ratio_));
-	dist = pow(appr_ratio_, kappa);
-
-	return dist;
+	float dist = -1.0f;
+	if (num % 2 == 0) dist = (list[num / 2 - 1] + list[num / 2]) / 2.0f;
+	else dist = list[num / 2];
+	
+	int kappa = (int) ceil(log(2.0f * dist / w_) / log(appr_ratio_));
+	return pow(appr_ratio_, kappa);
 }
 
 // -----------------------------------------------------------------------------
@@ -928,8 +1052,8 @@ float QALSH::calc_dist(				// calc projected distance
 	float q_val,						// hash value of query
 	const PageBuffer *ptr)				// page buffer
 {
-	int pos = ptr->index_pos_;
-	float key = ptr->leaf_node_->get_key(pos);
+	int   pos  = ptr->index_pos_;
+	float key  = ptr->leaf_node_->get_key(pos);
 	float dist = fabs(key - q_val);
 
 	return dist;

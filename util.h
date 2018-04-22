@@ -34,18 +34,18 @@ int create_dir(						// create directory
 // -----------------------------------------------------------------------------
 float calc_lp_dist(					// calc L_{p} norm
 	int   dim,							// dimension
-	float p,							// the p value of Lp norm, p in (0, 2]
+	float p,							// the p value of L_{p} norm, p in (0,2]
 	const float *vec1,					// 1st point
 	const float *vec2);					// 2nd point
 
 // -----------------------------------------------------------------------------
-//  functions used for the input/output of datasets and query sets.
+//  functions used for the input/output of data sets and query sets.
 // -----------------------------------------------------------------------------
-int read_set(						// read (data or query) set from disk
-	int   n,							// number of data objects
+int read_data(						// read data/query set from disk
+	int   n,							// number of data/query objects
 	int   d,							// dimensionality
-	const char *set,					// address of dataset
-	float **points);					// data or queries (return)
+	const char *fname,					// address of data/query set
+	float **data);						// data/query objects (return)
 
 // -----------------------------------------------------------------------------
 int write_data_new_form(			// write dataset with new format
@@ -95,6 +95,12 @@ void read_data_from_buffer(			// read data from buffer
 	int   d,							// dimensionality
 	const char *buffer,					// buffer to store data
 	float *data);						// data object (return)
+
+// -----------------------------------------------------------------------------
+int read_ground_truth(				// read ground truth results from disk
+	int qn,								// number of query objects
+	const char *fname,					// address of truth set
+	float **R);							// ground truth results (return)
 
 // -----------------------------------------------------------------------------
 int linear(							// linear scan search

@@ -150,7 +150,7 @@ int BTree::bulkload(				// bulkload a tree from memory
 	end_block = 0;
 	first_node = true;
 
-	for (int i = 0; i < n; i++) {
+	for (int i = 0; i < n; ++i) {
 		id = hashtable[i].id_;
 		key = hashtable[i].key_;
 
@@ -193,7 +193,7 @@ int BTree::bulkload(				// bulkload a tree from memory
 
 	while (last_end_block > last_start_block) {
 		first_node = true;
-		for (int i = last_start_block; i <= last_end_block; i++) {
+		for (int i = last_start_block; i <= last_end_block; ++i) {
 			block = i;				// get <block>
 			if (current_level == 1) {
 				leaf_child = new BLeafNode();

@@ -46,6 +46,15 @@ public:
 		const float *query,				// query object
 		const char *data_folder,		// data folder
 		MinK_List *list);				// k-NN results (return)
+
+	// -------------------------------------------------------------------------
+	int knn(						// k-NN search
+		int top_k,						// top-k value
+		float R,						// limited search range
+		const float *query,				// query object
+		const vector<int> &object_id,	// object id mapping
+		const char *data_folder,		// data folder
+		MinK_List *list);				// k-NN results (return)
 		
 protected:
 	int   n_pts_;					// cardinality
@@ -71,7 +80,8 @@ protected:
 	int   page_io_;					// io for scanning pages
 	int   *freq_;					// frequency of data objects
 	bool  *checked_;				// whether the data objects are checked
-	bool  *flag_;					// flag of bucket width
+	bool  *bucket_flag_;			// flag of bucket width
+	bool  *range_flag_;				// flag of search range
 	float *data_;					// one data object
 	float *q_val_;					// hash value of query
 	
