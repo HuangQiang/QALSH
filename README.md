@@ -1,30 +1,31 @@
 # QALSH: Query-Aware Locality-Sensitive Hashing
 
-Version: 1.3.1
+Version: 1.4.0
 
-Release date: 03-10-2017
+Release date:  03-10-2017
 
-Last Modified: 20-04-2018
+Last Modified: 25-04-2018
 
 
 Introduction
 --------
 
-This package is written in the C++ programming language. It provides two 
-external LSH schemes QALSH and QALSH+ for c-Approximate Nearest Neighbor 
-(or simply c-ANN) search under l_p norm, where p \in (0, 2].
+This package is written in the C++ programming language. It contains two 
+external LSH schemes QALSH and QALSH+ for high-dimensional c-Approximate 
+Nearest Neighbor (or simply c-ANN) search under l_p norm, where p \in 
+(0, 2].
 
 
-How to use this Package?
+Usage
 --------
 
-We provide a Makefile and a script (i.e., run_mnist.sh) as a running example 
-for comipling and running the package. Before running this package, please 
-ensure the input format of the dataset and query set is correct. We provide 
-a sample dataset and query set (i.e., Mnist) for your reference.
+We provide a Makefile and a shell script (i.e., run_mnist.sh) as a running 
+example for comipling and running the package. Before running this package, 
+please ensure the input format of the dataset and query set is correct. We 
+give a sample dataset and query set (i.e., Mnist) for your reference.
 
-We also provide the scripts (i.e., run_sift.sh, run_gist.sh, run_trevi.sh, 
-and run_p53.sh) for the users who would like to reproduce our results presented 
+We also share the shell scripts (i.e., run_sift.sh, run_gist.sh, run_trevi.sh, 
+and run_p53.sh) for the users who would like to reproduce the results presented 
 in PVLDB 2015 and VLDBJ 2017. The datasets Sift, Gist, Trevi, and P53 we used 
 can be downloaded from the following links:
 
@@ -59,14 +60,14 @@ Authors
   
   fengjlin@mail.sysu.edu.cn, fengjl9@gmail.com
   
-  http://ss.sysu.edu.cn/~fjl/
+  http://sdcs.sysu.edu.cn/content/2511, http://ss.sysu.edu.cn/~fjl/
 
 
 Relevant Papers
 --------
 
-The paper for the package of QALSH has been published in VLDB 2016 and The VLDB 
-Journal, which are displayed as follows:
+The papers for the package of QALSH have been published in PVLDB 2015 and VLDBJ 
+2017, which are displayed as follows:
 
 * **Qiang Huang, Jianlin Feng, Yikai Zhang, Qiong Fang, and Wilfred Ng. Query-Aware
 Locality-Sensitive Hashing for Approximate Nearest Neighbor Search. In 
