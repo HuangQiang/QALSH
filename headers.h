@@ -14,9 +14,9 @@
 //  Authors: Qiang HUANG  (huangq2011@gmail.com)
 //           Jianlin FENG (fengjlin@mail.sysu.edu.cn)
 //
-//  Release Date:  01-01-2018
-//  Last Modified: 20-04-2018
-//  Version 1.0.1
+//  Release Date:  03-10-2018
+//  Last Modified: 25-04-2018
+//  Version 1.4.0
 // -----------------------------------------------------------------------------
 #include <stdio.h>
 #include <errno.h>
