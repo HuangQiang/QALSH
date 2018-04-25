@@ -132,6 +132,20 @@ float calc_lp_dist(					// calc L_{p} norm
 }
 
 // -----------------------------------------------------------------------------
+float calc_recall(					// calc recall (percentage)
+	int  k,								// top-k value
+	const Result *R,					// ground truth results 
+	MinK_List *list)					// results returned by algorithms
+{
+	int i = k - 1;
+	int last = k - 1;
+	while (i >= 0 && list->ith_key(i) > R[last].key_) {
+		i--;
+	}
+	return (i + 1) * 100.0f / k;
+}
+
+// -----------------------------------------------------------------------------
 int read_data(						// read data/query set from disk
 	int   n,							// number of data/query objects
 	int   d,							// dimensionality
@@ -331,7 +345,7 @@ void read_data_from_buffer(			// read data from buffer
 int read_ground_truth(				// read ground truth results from disk
 	int qn,								// number of query objects
 	const char *fname,					// address of truth set
-	float **R)							// ground truth results (return)
+	Result **R)							// ground truth results (return)
 {
 	FILE *fp = fopen(fname, "r");
 	if (!fp) {
@@ -345,9 +359,8 @@ int read_ground_truth(				// read ground truth results from disk
 	assert(tmp1 == qn && tmp2 == MAXK);
 
 	for (int i = 0; i < qn; ++i) {
-		fscanf(fp, "%d", &tmp1);
 		for (int j = 0; j < MAXK; ++j) {
-			fscanf(fp, " %f", &R[i][j]);
+			fscanf(fp, "%d %f", &R[i][j].id_, &R[i][j].key_);
 		}
 		fscanf(fp, "\n");
 	}

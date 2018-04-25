@@ -20,14 +20,14 @@ int ground_truth(					// find ground truth
 	for (int i = 0; i < n; ++i) data[i] = new float[d];
 	if (read_data(n, d, data_set, data) == 1) {
 		printf("Reading Dataset Error!\n");
-		exit(1);
+		return 1;
 	}
 
 	float **query = new float*[qn];
 	for (int i = 0; i < qn; ++i) query[i] = new float[d];
 	if (read_data(qn, d, query_set, query) == 1) {
 		printf("Reading Query Set Error!\n");
-		exit(1);
+		return 1;
 	}
 
 	gettimeofday(&end_time, NULL);
@@ -54,9 +54,8 @@ int ground_truth(					// find ground truth
 			list->insert(dist, j);
 		}
 
-		fprintf(fp, "%d", i + 1);
 		for (int j = 0; j < MAXK; ++j) {
-			fprintf(fp, " %f", list->ith_key(j));
+			fprintf(fp, "%d %f ", list->ith_id(j), list->ith_key(j));
 		}
 		fprintf(fp, "\n");
 	}
@@ -109,7 +108,7 @@ int indexing_of_qalsh_plus(			// indexing of qalsh+
 	for (int i = 0; i < n; ++i) data[i] = new float[d];
 	if (read_data(n, d, data_set, data) == 1) {
 		printf("Reading Dataset Error!\n");
-		exit(1);
+		return 1;
 	}
 
 	gettimeofday(&end_time, NULL);
@@ -191,14 +190,14 @@ int knn_of_qalsh_plus(				// k-NN search of qalsh+
 	for (int i = 0; i < qn; ++i) query[i] = new float[d];
 	if (read_data(qn, d, query_set, query) == 1) {
 		printf("Reading Query Set Error!\n");
-		exit(1);
+		return 1;
 	}
 
-	float **R = new float*[qn];
-	for (int i = 0; i < qn; ++i) R[i] = new float[MAXK];
+	Result **R = new Result*[qn];
+	for (int i = 0; i < qn; ++i) R[i] = new Result[MAXK];
 	if (read_ground_truth(qn, truth_set, R) == 1) {
 		printf("Reading Truth Set Error!\n");
-		exit(1);
+		return 1;
 	}
 
 	gettimeofday(&end_time, NULL);
@@ -216,7 +215,7 @@ int knn_of_qalsh_plus(				// k-NN search of qalsh+
 	QALSH_Plus *lsh = new QALSH_Plus();
 	if (lsh->load(index_path)) {
 		printf("Could not load QALSH_Plus\n");
-		exit(1);
+		return 1;
 	}
 
 	// -------------------------------------------------------------------------
@@ -238,6 +237,7 @@ int knn_of_qalsh_plus(				// k-NN search of qalsh+
 
 	float runtime = -1.0f;
 	float overall_ratio = -1.0f;
+	float recall = -1.0f;
 	long long io_cost = -1;
 
 	printf("c-k-ANN Search by QALSH+: \n");
@@ -245,21 +245,24 @@ int knn_of_qalsh_plus(				// k-NN search of qalsh+
 		printf("  nb = %d\n", nb);
 		fprintf(fp, "nb = %d\n", nb);
 
-		printf("  Top-k\t\tRatio\t\tI/O\t\tTime (ms)\n");
+		printf("  Top-k\t\tRatio\t\tI/O\t\tTime (ms)\tRecall\n");
 		for (int num = 0; num < maxRound; ++num) {
 			gettimeofday(&start_time, NULL);
 			top_k = kNNs[num];
 			MinK_List *list = new MinK_List(top_k);
 
 			overall_ratio = 0.0f;
+			recall = 0.0f;
 			io_cost = 0;
 			for (int i = 0; i < qn; ++i) {
 				list->reset();
 				io_cost += lsh->knn(top_k, nb, query[i], data_folder, list);
 				
+				recall += calc_recall(top_k, (const Result *) R[i], list);
+
 				float ratio = 0.0f;
 				for (int j = 0; j < top_k; ++j) {
-					ratio += list->ith_key(j) / R[i][j];
+					ratio += list->ith_key(j) / R[i][j].key_;
 				}
 				overall_ratio += ratio / top_k;
 			}
@@ -269,13 +272,14 @@ int knn_of_qalsh_plus(				// k-NN search of qalsh+
 				start_time.tv_usec) / 1000000.0f;
 
 			overall_ratio = overall_ratio / qn;
+			recall = recall / qn;
 			runtime = (runtime * 1000.0f) / qn;
 			io_cost = (int) ceil((float) io_cost / (float) qn);
 
-			printf("  %3d\t\t%.4f\t\t%lld\t\t%.2f\n", top_k, overall_ratio, 
-				io_cost, runtime);
-			fprintf(fp, "%d\t%f\t%lld\t%f\n", top_k, overall_ratio, 
-				io_cost, runtime);
+			printf("  %3d\t\t%.4f\t\t%lld\t\t%.2f\t\t%.2f\n", 
+				top_k, overall_ratio, io_cost, runtime, recall);
+			fprintf(fp, "%d\t%f\t%lld\t%f\t%f\n", 
+				top_k, overall_ratio, io_cost, runtime, recall);
 		}
 		printf("\n");
 		fprintf(fp, "\n");
@@ -318,7 +322,7 @@ int indexing_of_qalsh(				// indexing of qalsh
 	for (int i = 0; i < n; ++i) data[i] = new float[d];
 	if (read_data(n, d, data_set, data) == 1) {
 		printf("Reading Dataset Error!\n");
-		exit(1);
+		return 1;
 	}
 
 	gettimeofday(&end_time, NULL);
@@ -399,14 +403,14 @@ int knn_of_qalsh(					// k-NN search of qalsh
 	for (int i = 0; i < qn; ++i) query[i] = new float[d];
 	if (read_data(qn, d, query_set, query) == 1) {
 		printf("Reading Query Set Error!\n");
-		exit(1);
+		return 1;
 	}
 
-	float **R = new float*[qn];
-	for (int i = 0; i < qn; ++i) R[i] = new float[MAXK];
+	Result **R = new Result*[qn];
+	for (int i = 0; i < qn; ++i) R[i] = new Result[MAXK];
 	if (read_ground_truth(qn, truth_set, R) == 1) {
 		printf("Reading Truth Set Error!\n");
-		exit(1);
+		return 1;
 	}
 
 	gettimeofday(&end_time, NULL);
@@ -424,7 +428,7 @@ int knn_of_qalsh(					// k-NN search of qalsh
 	QALSH *lsh = new QALSH();
 	if (lsh->load(index_path)) {
 		printf("Could not load QALSH\n");
-		exit(1);
+		return 1;
 	}
 
 	// -------------------------------------------------------------------------
@@ -446,14 +450,16 @@ int knn_of_qalsh(					// k-NN search of qalsh
 
 	float runtime = -1.0f;
 	float overall_ratio = -1.0f;
+	float recall = -1.0f;
 	long long io_cost = -1;
 
 	printf("c-k-ANN Search by QALSH: \n");
-	printf("  Top-k\t\tRatio\t\tI/O\t\tTime (ms)\n");
+	printf("  Top-k\t\tRatio\t\tI/O\t\tTime (ms)\tRecall\n");
 	for (int num = 0; num < maxRound; ++num) {
 		gettimeofday(&start_time, NULL);
 		top_k = kNNs[num];
 		overall_ratio = 0.0f;
+		recall = 0.0f;
 		io_cost = 0;
 
 		MinK_List *list = new MinK_List(top_k);
@@ -461,9 +467,11 @@ int knn_of_qalsh(					// k-NN search of qalsh
 			list->reset();
 			io_cost += lsh->knn(top_k, query[i], data_folder, list);
 
+			recall += calc_recall(top_k, (const Result *) R[i], list);
+
 			float ratio = 0.0f;
 			for (int j = 0; j < top_k; ++j) {
-				ratio += list->ith_key(j) / R[i][j];
+				ratio += list->ith_key(j) / R[i][j].key_;
 			}
 			overall_ratio += ratio / top_k;
 		}
@@ -473,13 +481,14 @@ int knn_of_qalsh(					// k-NN search of qalsh
 			start_time.tv_usec) / 1000000.0f;
 
 		overall_ratio = overall_ratio / qn;
+		recall = recall / qn;
 		runtime = (runtime * 1000.0f) / qn;
 		io_cost = (int) ceil((float) io_cost / (float) qn);
 
-		printf("  %3d\t\t%.4f\t\t%lld\t\t%.2f\n", top_k, overall_ratio, 
-			io_cost, runtime);
-		fprintf(fp, "%d\t%f\t%lld\t%f\n", top_k, overall_ratio, 
-			io_cost, runtime);
+		printf("  %3d\t\t%.4f\t\t%lld\t\t%.2f\t\t%.2f\n", 
+			top_k, overall_ratio, io_cost, runtime, recall);
+		fprintf(fp, "%d\t%f\t%lld\t%f\t%f\n", 
+			top_k, overall_ratio, io_cost, runtime, recall);
 	}
 	printf("\n");
 	fclose(fp);
@@ -520,14 +529,14 @@ int linear_scan(					// brute-force linear scan (data in disk)
 	for (int i = 0; i < qn; ++i) query[i] = new float[d];
 	if (read_data(qn, d, query_set, query) == 1) {
 		printf("Reading Query Set Error!\n");
-		exit(1);
+		return 1;
 	}
 
-	float **R = new float*[qn];
-	for (int i = 0; i < qn; ++i) R[i] = new float[MAXK];
+	Result **R = new Result*[qn];
+	for (int i = 0; i < qn; ++i) R[i] = new Result[MAXK];
 	if (read_ground_truth(qn, truth_set, R) == 1) {
 		printf("Reading Truth Set Error!\n");
-		exit(1);
+		return 1;
 	}
 
 	gettimeofday(&end_time, NULL);
@@ -554,14 +563,16 @@ int linear_scan(					// brute-force linear scan (data in disk)
 
 	float runtime = -1.0f;
 	float overall_ratio = -1.0f;
+	float recall = -1.0f;
 	long long io_cost = -1;
 
 	printf("k-NN Search by Linear Scan:\n");
-	printf("  Top-k\t\tRatio\t\tI/O\t\tTime (ms)\n");
+	printf("  Top-k\t\tRatio\t\tI/O\t\tTime (ms)\tRecall\n");
 	for (int round = 0; round < maxRound; round++) {
 		gettimeofday(&start_time, NULL);
 		top_k = kNNs[round];
 		overall_ratio = 0.0f;
+		recall = 0.0f;
 		io_cost = 0;
 
 		MinK_List *list = new MinK_List(top_k);
@@ -570,9 +581,11 @@ int linear_scan(					// brute-force linear scan (data in disk)
 			io_cost += linear(n, d, B, p, top_k, (const float*) query[i], 
 				data_folder, list);
 
+			recall += calc_recall(top_k, (const Result *) R[i], list);
+
 			float ratio = 0.0f;
 			for (int j = 0; j < top_k; ++j) {
-				ratio += list->ith_key(j) / R[i][j];
+				ratio += list->ith_key(j) / R[i][j].key_;
 			}
 			overall_ratio += ratio / top_k;
 		}
@@ -582,13 +595,14 @@ int linear_scan(					// brute-force linear scan (data in disk)
 			start_time.tv_usec) / 1000000.0f;
 
 		overall_ratio = overall_ratio / qn;
+		recall = recall / qn;
 		runtime = (runtime * 1000.0f) / qn;
 		io_cost = (int) ceil((float) io_cost / (float) qn);
 
-		printf("  %3d\t\t%.4f\t\t%lld\t\t%.2f\n", top_k, overall_ratio, 
-			io_cost, runtime);
-		fprintf(fp, "%d\t%f\t%lld\t%f\n", top_k, overall_ratio, 
-			io_cost, runtime);
+		printf("  %3d\t\t%.4f\t\t%lld\t\t%.2f\t\t%.2f\n", 
+			top_k, overall_ratio, io_cost, runtime, recall);
+		fprintf(fp, "%d\t%f\t%lld\t%f\t%f\n", 
+			top_k, overall_ratio, io_cost, runtime, recall);
 	}
 	printf("\n");
 	fclose(fp);

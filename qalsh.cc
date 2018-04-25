@@ -365,7 +365,6 @@ int QALSH::load(					// load index
 		trees_[i] = new BTree();
 		trees_[i]->init_restore(fname);
 	}
-
 	return 0;
 }
 

@@ -5,6 +5,7 @@
 //  basic data structures
 // -----------------------------------------------------------------------------
 class  MinK_List;
+
 struct Result {						// basic data structure 
 	float key_;
 	int   id_;
@@ -37,6 +38,12 @@ float calc_lp_dist(					// calc L_{p} norm
 	float p,							// the p value of L_{p} norm, p in (0,2]
 	const float *vec1,					// 1st point
 	const float *vec2);					// 2nd point
+
+// -----------------------------------------------------------------------------
+float calc_recall(					// calc recall (percentage)
+	int k,								// top-k value
+	const Result *R,					// ground truth results 
+	MinK_List *list);					// results returned by algorithms
 
 // -----------------------------------------------------------------------------
 //  functions used for the input/output of data sets and query sets.
@@ -100,7 +107,7 @@ void read_data_from_buffer(			// read data from buffer
 int read_ground_truth(				// read ground truth results from disk
 	int qn,								// number of query objects
 	const char *fname,					// address of truth set
-	float **R);							// ground truth results (return)
+	Result **R);						// ground truth results (return)
 
 // -----------------------------------------------------------------------------
 int linear(							// linear scan search
