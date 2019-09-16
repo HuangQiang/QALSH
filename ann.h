@@ -2,70 +2,43 @@
 #define __ANN_H
 
 // -----------------------------------------------------------------------------
-int ground_truth(					// find ground truth
-	int   n,							// number of data objects
-	int   qn,							// number of query objects
+int linear_scan(					// k-NN search by linear scan
+	int   n,							// number of data points
+	int   qn,							// number of query points
 	int   d,							// dimensionality
 	float p,							// the p value of Lp norm, p in (0,2]
-	const char *data_set,				// address of data  set
-	const char *query_set,				// address of query set
-	const char *truth_set);				// address of truth set
+	const float **data,					// data set
+	const float **query,				// query set
+	const Result **R,					// truth set
+	const char *out_path);				// output path
 
 // -----------------------------------------------------------------------------
-int indexing_of_qalsh_plus(			// indexing of qalsh+
-	int   n,							// number of data objects
+int qalsh_plus(						// k-NN search by qalsh+
+	int   n,							// number of data  objects
+	int   qn,							// number of query objects
 	int   d,							// dimensionality
-	int   B,							// page size
-	int   kd_leaf_size,					// leaf size of kd-tree
+	int   leaf,							// leaf size of kd-tree
 	int   L,							// number of projection (drusilla)
 	int   M,							// number of candidates (drusilla)
 	float p,							// the p value of Lp norm, p in (0,2]
 	float zeta,							// symmetric factor of p-stable distr.
 	float ratio,						// approximation ratio
-	const char *data_set,				// address of data set
-	const char *data_folder,			// data folder
-	const char *output_folder);			// output folder
+	const float **data,					// data set
+	const float **query,				// query set
+	const Result **R,					// truth set
+	const char *out_path);				// output path
 
 // -----------------------------------------------------------------------------
-int knn_of_qalsh_plus(				// k-NN search of qalsh+
+int qalsh(							// k-NN search by qalsh
+	int   n,							// number of data  objects
 	int   qn,							// number of query objects
 	int   d,							// dimensionality
-	const char *query_set,				// address of query set
-	const char *truth_set,				// address of truth set
-	const char *data_folder,			// data folder
-	const char *output_folder);			// output folder
-
-// -----------------------------------------------------------------------------
-int indexing_of_qalsh(				// indexing of qalsh
-	int   n,							// number of data objects
-	int   d,							// dimensionality
-	int   B,							// page size
 	float p,							// the p value of Lp norm, p in (0,2]
 	float zeta,							// symmetric factor of p-stable distr.
 	float ratio,						// approximation ratio
-	const char *data_set,				// address of data set
-	const char *data_folder,			// data folder
-	const char *output_folder);			// output folder
-
-// -----------------------------------------------------------------------------
-int knn_of_qalsh(					// k-NN search of qalsh
-	int   qn,							// number of query objects
-	int   d,							// dimensionality
-	const char *query_set,				// address of query set
-	const char *truth_set,				// address of truth set
-	const char *data_folder,			// data folder
-	const char *output_folder);			// output folder
-
-// -----------------------------------------------------------------------------
-int linear_scan(					// brute-force linear scan (data in disk)
-	int   n,							// number of data objects
-	int   qn,							// number of query objects
-	int   d,							// dimensionality
-	int   B,							// page size
-	float p,							// the p value of Lp norm, p in (0,2]
-	const char *query_set,				// address of query set
-	const char *truth_set,				// address of truth set
-	const char *data_folder,			// data folder
-	const char *output_folder);			// output folder
+	const float **data,					// data set
+	const float **query,				// query set
+	const Result **R,					// truth set
+	const char *out_path);				// output path
 
 #endif // __ANN_H

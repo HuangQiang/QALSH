@@ -1,12 +1,8 @@
 #ifndef __QALSH_PLUS_H
 #define __QALSH_PLUS_H
 
-#include <unordered_map>
-using namespace std;
-
-class  QALSH;
-class  MinK_List;
-struct Result;
+class QALSH;
+class MinK_List;
 
 // -----------------------------------------------------------------------------
 //  Blocks: an block which stores hash tables for some of data objects
@@ -21,60 +17,56 @@ struct Blocks {
 };
 
 // -----------------------------------------------------------------------------
-class QALSH_Plus {
+//  QALSH_PLUS: an two-level LSH scheme for high-dimensional c-k-ANN search
+// -----------------------------------------------------------------------------
+class QALSH_PLUS {
 public:
-	QALSH_Plus();
-	~QALSH_Plus();
-
-	// -------------------------------------------------------------------------
-	int build(						// build index	
-		int   n,						// number of data objects
+	QALSH_PLUS(						// constructor
+		int   n,						// cardinality
 		int   d,						// dimensionality
-		int   B,						// page size
-		int   kd_leaf_size,				// leaf size of kd-tree
-		int   L,						// number of projection (drusilla)
-		int   M,						// number of candidates (drusilla)
+		int   leaf,						// leaf size of kd-tree
+		int   L,						// number of projection
+		int   M,						// number of candidates for each proj
 		float p,						// l_p distance
 		float zeta,						// a parameter of p-stable distr.
 		float ratio,					// approximation ratio
-		const float **data,				// data objects
-		const char *index_path);		// index path
+		const float **data);			// data objects
 
 	// -------------------------------------------------------------------------
-	int load(						// load index
-		const char *index_path);		// index path
+	~QALSH_PLUS();					// destructor
 
 	// -------------------------------------------------------------------------
-	int knn(						// k-NN search
-		int top_k,						// top-k value
-		int nb,							// number of blocks for search
-		const float *query,				// input query
-		const char *data_folder,		// data folder
-		MinK_List *list);				// top-k results (return)
+	void display();					// display parameters
+
+	// -------------------------------------------------------------------------
+	int knn(						// k-NN seach	
+		int   top_k,					// top-k value
+		int   nb,						// number of blocks for search
+		const float *query,				// input query object
+		MinK_List *list);				// k-NN results (return)
 
 protected:
-	int   n_pts_;					// number of data objects
+	int   n_pts_;					// cardinality
 	int   dim_;						// dimensionality
-	int   B_;						// page size
-	int   kd_leaf_size_;			// leaf size of kd-tree
+	int   leaf_;					// leaf size of kd-tree
 	int   L_;						// number of projection (drusilla)
 	int   M_;						// number of candidates (drusilla)
 	float p_;						// l_p distance
 	float zeta_;					// a parameter of p-stable distr.
 	float appr_ratio_;				// approximation ratio
-	char  index_path_[200];			// index path
 
 	int   num_blocks_;				// number of blocks 
-	vector<Blocks*> blocks_;		// blocks
-
+	float **new_order_data_;		// new order data objects
+	vector<Blocks*> blocks_;		// index of blocks
+	
 	int   sample_n_pts_;			// number of sample data objects
-	vector<int> sample_id_;			// sample data id
-	unordered_map<int, int> sample_id_to_block_; // sample data id to block	
+	int   *sample_id_to_block_;		// sample data id to block
+	float **sample_data_;			// sample data objects
 	QALSH *lsh_;					// index of sample data objects
 
 	// -------------------------------------------------------------------------
-	int bulkload(					// bulkloading for each block
-		const float **data);			// original data objects
+	int bulkload(					// bulkloading
+		const float **data);			// data objects
 
 	// -------------------------------------------------------------------------
 	int kd_tree_partition(			// kd-tree partition 
@@ -98,19 +90,10 @@ protected:
 		int   *sample_id);				// sample data id (return)
 
 	// -------------------------------------------------------------------------
-	int write_params();				// write parameters
-
-	// -------------------------------------------------------------------------
-	int display();					// display parameters
-
-	// -------------------------------------------------------------------------
-	int read_params();				// read parameters
-
-	// -------------------------------------------------------------------------
 	int get_block_order(			// get block order
 		int nb,							// number of blocks for search
 		MinK_List *list,				// top-t results from sample data
 		vector<int> &block_order);		// block order (return)
 };
 
-#endif // __QALSH_PLUS_H
+#endif // QALSH_PLUS

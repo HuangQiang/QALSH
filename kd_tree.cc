@@ -183,13 +183,13 @@ void KD_Tree::calc_stat(			// calc median and variance value
 	// -------------------------------------------------------------------------
 	//  calc mean, min, and max
 	// -------------------------------------------------------------------------
-	float *arr = new float[n];
+	vector<float> arr(n);
 	float val  = data_[object_id[0]][d];
 
 	arr[0] = val;
-	min = val;
-	max = val;
-	mean = val;
+	min    = val;
+	max    = val;
+	mean   = val;
 	for (int i = 1; i < n; ++i) {
 		val = data_[object_id[i]][d];
 		arr[i] = val;
@@ -203,7 +203,7 @@ void KD_Tree::calc_stat(			// calc median and variance value
 	// -------------------------------------------------------------------------
 	//  calc median
 	// -------------------------------------------------------------------------
-	sort(arr, arr + n);
+	sort(arr.begin(), arr.end());
 	if (n % 2 != 0) median = arr[n / 2];
 	else median = (arr[n / 2 - 1] + arr[n / 2]) / 2;
 
@@ -216,11 +216,6 @@ void KD_Tree::calc_stat(			// calc median and variance value
 		variance += diff * diff;
 	}
 	variance /= n;
-
-	// -------------------------------------------------------------------------
-	//  release space
-	// -------------------------------------------------------------------------
-	delete[] arr; arr = NULL;
 }
 
 // -----------------------------------------------------------------------------
@@ -286,6 +281,7 @@ void KD_Tree::search(				// k-NN search
 	MinK_List *list)					// k-NN results (return)
 {
 	assert(top_k <= n_pts_);
+
 	ratio = POW(ratio);
 	float box_dist = calc_box_dist(query);
 
