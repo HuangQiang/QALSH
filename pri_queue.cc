@@ -18,13 +18,6 @@ MinK_List::~MinK_List() 			// destructor
 }
 
 // -----------------------------------------------------------------------------
-bool MinK_List::isFull()			// is full?
-{
-	if (num_ >= k_) return true;
-	else return false;
-}
-
-// -----------------------------------------------------------------------------
 float MinK_List::insert(			// insert item (inline for speed)
 	float key,							// key of item
 	int id)								// id of item

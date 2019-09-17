@@ -51,11 +51,12 @@ public:
 	{ return num_blocks_; }
 
 	// -------------------------------------------------------------------------
-	void fwrite_number(				// write a value (type int)
-		int num);						// value to write
+	void fwrite_number(int num) 	// write a value (type int)
+	{ put_bytes((char *) &num, SIZEINT); }
 
 	// -------------------------------------------------------------------------
-	int fread_number();				// read a value (type int)
+	int fread_number()				// read a value (type int)
+	{ char ca[SIZEINT]; get_bytes(ca, SIZEINT); return *((int *)ca); }
 
 	// -------------------------------------------------------------------------
 	void read_header(				// read remain bytes excluding header

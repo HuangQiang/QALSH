@@ -4,9 +4,17 @@
 // -----------------------------------------------------------------------------
 //  functions used for generating random variables (r.v.)
 // -----------------------------------------------------------------------------
-float uniform(						// r.v. from Uniform(min, max)
+inline float uniform(				// r.v. from Uniform(min, max)
 	float min,							// min value
-	float max);							// max value
+	float max)							// max value
+{
+	// assert(min <= max);
+	// float x = min + (max - min) * (float)rand() / (float)RAND_MAX;
+	// assert(x >= min && x <= max);
+	// return x;
+
+	return min + (max - min) * (float)rand() / (float)RAND_MAX;
+}
 
 // -----------------------------------------------------------------------------
 float gaussian(						// r.v. from Gaussian(mean, sigma)
@@ -34,8 +42,11 @@ float p_stable(						// r.v. from p-satble distr.
 //  functions used for calculating probability distribution function (pdf) and 
 //  cumulative distribution function (cdf)
 // -----------------------------------------------------------------------------
-float gaussian_pdf(					// pdf of N(0, 1)
-	float x);							// variable
+inline float gaussian_pdf(			// pdf of N(0, 1)
+	float x)							// variable
+{
+	return exp(-x * x / 2.0f) / sqrt(2.0f * PI);
+}
 
 // -----------------------------------------------------------------------------
 float gaussian_cdf(					// cdf of N(0, 1) in range (-inf, x]
@@ -48,8 +59,11 @@ float new_gaussian_cdf(				// cdf of N(0, 1) in range [-x, x]
 	float step = 0.001f);				// step increment
 
 // -----------------------------------------------------------------------------
-float levy_pdf(						// pdf of Levy(1, 0)
-	float x);							// variable
+inline float levy_pdf(				// pdf of Levy(1, 0)
+	float x)							// variable
+{
+	return exp(-1.0f / (2.0f * x)) / (sqrt(2.0f * PI) * pow(x, 1.5f));
+}
 
 // -----------------------------------------------------------------------------
 float levy_cdf(						// cdf of Levy(0, 1) in range (0, x]
@@ -68,12 +82,18 @@ float new_gaussian_prob(			// calc new gaussian probability
 	float x);							// x = w / (2 * r)
 
 // -----------------------------------------------------------------------------
-float orig_cauchy_prob(				// calc original cauchy probability
-	float x);							// x = w / r
+inline float orig_cauchy_prob(		// calc original cauchy probability
+	float x)							// x = w / r
+{
+	return 2.0F * atan(x) / PI - log(1.0F + x * x) / (PI * x);
+}
 
 // -----------------------------------------------------------------------------
-float new_cauchy_prob(				// calc new cauchy probability
-	float x);							// x = w / (2 * r)
+inline float new_cauchy_prob(		// calc new cauchy probability
+	float x)							// x = w / (2 * r)
+{
+	return 2.0F * atan(x) / PI;
+}
 
 // -----------------------------------------------------------------------------
 float orig_levy_prob(				// calc original levy probability

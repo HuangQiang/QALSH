@@ -29,14 +29,15 @@ void KD_Leaf::search(				// tree search
 	MinK_List *list)					// k-NN results (return)
 {
 	for (int i = 0; i < n_pts_; ++i) {
-		const float *point = data_[object_id_[i]];
+		int id = object_id_[i];
+		const float *point = data_[id];
 		
 		float dist = 0.0F;
 		for (int j = 0; j < dim_; ++j) {
 			float t = point[j] - query[j];
 			dist = SUM(dist, POW(t));
 		}
-		list->insert(dist, object_id_[i]);
+		list->insert(dist, id);
 	}
 }
 

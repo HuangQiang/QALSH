@@ -2,20 +2,7 @@
 
 // -----------------------------------------------------------------------------
 //  functions used for generating random variables (r.v.).
-// -----------------------------------------------------------------------------
-float uniform(						// r.v. from Uniform(min, max)
-	float min,							// min value
-	float max)							// max value
-{
-	assert(min <= max);
-
-	float x = min + (max - min) * (float)rand() / (float)RAND_MAX;
-	assert(x >= min && x <= max);
-
-	return x;
-}
-
-// -----------------------------------------------------------------------------
+//
 //  use Box-Muller transform to generate a r.v. from Gaussian(mean, sigma)
 //  standard Gaussian distr. is Gaussian(0, 1), where mean = 0 and sigma = 1
 // -----------------------------------------------------------------------------
@@ -23,8 +10,7 @@ float gaussian(						// r.v. from N(mean, sigma)
 	float mu,							// mean (location)
 	float sigma)						// stanard deviation (scale > 0)
 {
-	assert(sigma > 0.0f);
-
+	// assert(sigma > 0.0f);
 	float u1 = -1.0f;
 	float u2 = -1.0f;
 	do {
@@ -32,9 +18,8 @@ float gaussian(						// r.v. from N(mean, sigma)
 	} while (u1 < FLOATZERO);
 	u2 = uniform(0.0f, 1.0f);
 
-	float x = mu + sigma * sqrt(-2.0f * log(u1)) * cos(2.0f * PI * u2);
-	// float x = mu + sigma * sqrt(-2.0f * log(u1)) * sin(2.0f * PI * u2);
-	return x;
+	return mu + sigma * sqrt(-2.0f * log(u1)) * cos(2.0f * PI * u2);
+	// return mu + sigma * sqrt(-2.0f * log(u1)) * sin(2.0f * PI * u2);
 }
 
 // -----------------------------------------------------------------------------
@@ -44,15 +29,13 @@ float cauchy(						// r.v. from Cauchy(gamma, delta)
 	float gamma,						// scale factor (gamma > 0)
 	float delta)						// location
 {
-	assert(gamma > 0.0f);
-
+	// assert(gamma > 0.0f);
 	float u = -1.0f;
 	do {
 		u = uniform(0.0f, 1.0f);
 	} while (u < FLOATZERO || u > 1.0f - FLOATZERO);
 
-	float x = gamma * tan(PI * (u - 0.5f)) + delta;
-	return x;
+	return gamma * tan(PI * (u - 0.5f)) + delta;
 
 	// -------------------------------------------------------------------------
 	//  another way to generate a standard Cauchy(1.0, 0.0) r.v.
@@ -73,15 +56,13 @@ float levy(							// r.v. from Levy(gamma, delta)
 	float gamma,						// scale factor (gamma > 0)
 	float delta)						// location
 {
-	assert(gamma > 0.0f);
-
-	float g;
+	// assert(gamma > 0.0f);
+	float g = -1.0f;
 	do {
 		g = gaussian(0.0f, 1.0f);
 	} while (fabs(g) < FLOATZERO);
 
-	float x = gamma / (g * g) + delta;
-	return x;
+	return gamma / (g * g) + delta;
 }
 
 // -----------------------------------------------------------------------------
@@ -97,9 +78,9 @@ float p_stable(						// r.v. from p-satble distr.
 	float gamma,						// scale factor (gamma > 0)
 	float delta)						// location
 {
-	assert(p > 0.0f && p <= 2.0f);
-	assert(zeta >= -1.0f && zeta <= 1.0f);
-	assert(gamma > 0.0f);
+	// assert(p > 0.0f && p <= 2.0f);
+	// assert(zeta >= -1.0f && zeta <= 1.0f);
+	// assert(gamma > 0.0f);
 
 	float x = -1.0f;				// r.v. from p-stable distr.
 	float u1 = uniform(0.0f, 1.0f);	// r.v. from uniform distr.
@@ -142,7 +123,6 @@ float p_stable(						// r.v. from p-satble distr.
 			x = t1 * pow(t3, (1.0f - p) / p) / t2;
 		}
 	}
-
 	return gamma * x + delta;
 }
 
@@ -150,14 +130,6 @@ float p_stable(						// r.v. from p-satble distr.
 // -----------------------------------------------------------------------------
 //  functions used for calculating probability distribution function (pdf) and
 //  cumulative distribution function (cdf).
-// -----------------------------------------------------------------------------
-float gaussian_pdf(					// pdf of N(0, 1)
-	float x)							// variable
-{
-	float ret = exp(-x * x / 2.0f) / sqrt(2.0f * PI);
-	return ret;
-}
-
 // -----------------------------------------------------------------------------
 float gaussian_cdf(					// cdf of N(0, 1) in range (-inf, x]
 	float x,							// integral border
@@ -175,8 +147,7 @@ float new_gaussian_cdf(				// cdf of N(0, 1) in range [-x, x]
 	float x,							// integral border (x > 0)
 	float step)							// step increment
 {
-	assert(x > 0.0f);
-
+	// assert(x > 0.0f);
 	float ret = 0.0f;
 	for (float i = -x; i <= x; i += step) {
 		ret += step * gaussian_pdf(i);
@@ -185,20 +156,11 @@ float new_gaussian_cdf(				// cdf of N(0, 1) in range [-x, x]
 }
 
 // -----------------------------------------------------------------------------
-float levy_pdf(						// pdf of Levy(1, 0)
-	float x)							// variable
-{
-	float ret = exp(-1.0f / (2.0f * x)) / (sqrt(2.0f * PI) * pow(x, 1.5f));
-	return ret;
-}
-
-// -----------------------------------------------------------------------------
 float levy_cdf(						// cdf of Levy(0, 1) in range (0, x]
 	float x,							// integral border (x > 0)
 	float step)							// step increment
 {
-	assert(x > 0.0f);
-
+	// assert(x > 0.0f);
 	float ret = 0.0f;
 	for (float i = step; i < x; i += step) {
 		ret += (step * levy_pdf(i));
@@ -214,41 +176,23 @@ float orig_gaussian_prob(			// calc original gaussian probability
 	float x)							// x = w / r
 {
 	float norm = gaussian_cdf(-x, 0.001F);
-	float tmp = 2.0F * (1.0F - exp(-x * x / 2.0F)) / (sqrt(2.0F * PI) * x);
+	float tmp  = 2.0F * (1.0F - exp(-x * x / 2.0F)) / (sqrt(2.0F * PI) * x);
 
-	float p = 1.0F - 2.0F * norm - tmp;
-	return p;
+	return 1.0F - 2.0F * norm - tmp;
 }
 
 // -----------------------------------------------------------------------------
 float new_gaussian_prob(			// calc new gaussian probability
 	float x)							// x = w / (2 * r)
 {
-	float p = new_gaussian_cdf(x, 0.001F);
-	return p;
-}
-
-// -----------------------------------------------------------------------------
-float orig_cauchy_prob(				// calc original cauchy probability
-	float x)							// x = w / r
-{
-	float p = 2.0F * atan(x) / PI - log(1.0F + x * x) / (PI * x);
-	return p;
-}
-
-// -----------------------------------------------------------------------------
-float new_cauchy_prob(				// calc new cauchy probability
-	float x)							// x = w / (2 * r)
-{
-	float p = 2.0F * atan(x) / PI;
-	return p;
+	return new_gaussian_cdf(x, 0.001F);
 }
 
 // -----------------------------------------------------------------------------
 float orig_levy_prob(				// calc original levy probability
 	float x)							// x = w / r
 {
-	float p = 0.0F;
+	float p    = 0.0F;
 	float step = 0.001F;
 	for (float i = step; i < x; i += step) {
 		p += (step * levy_pdf(i) * (1.0F - i / x));
@@ -260,8 +204,7 @@ float orig_levy_prob(				// calc original levy probability
 float new_levy_prob(				// calc new levy probability
 	float x)							// x = w / (2 * r)
 {
-	float p = levy_cdf(x, 0.001F);
-	return p;
+	return levy_cdf(x, 0.001F);
 }
 
 // -----------------------------------------------------------------------------
@@ -277,8 +220,8 @@ void orig_stable_prob(				// calc orig stable probability
 	float &p1,							// p1 = p(w / r) (return)
 	float &p2)							// p2 = p(w / (c * r)) (return)
 {
-	assert(p > 0.0f && p <= 2.0f);
-	assert(zeta >= -1.0f && zeta <= 1.0f);
+	// assert(p > 0.0f && p <= 2.0f);
+	// assert(zeta >= -1.0f && zeta <= 1.0f);
 
 	int   d = 30;					// d can be any value larger than 1
 	float *object = new float[d];	// init the object and queries
@@ -368,8 +311,8 @@ void new_stable_prob(				// calc new stable probability
 	float &p1,							// p1 = p(w / r) (return)
 	float &p2)							// p2 = p(w / (c * r)) (return)
 {
-	assert(p > 0.0f && p <= 2.0f);
-	assert(zeta >= -1.0f && zeta <= 1.0f);
+	// assert(p > 0.0f && p <= 2.0f);
+	// assert(zeta >= -1.0f && zeta <= 1.0f);
 
 	int d = 30;						// d can be any value larger than 1
 	float *object = new float[d];	// init the object and queries

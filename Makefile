@@ -1,5 +1,6 @@
 SRCS=util.cc random.cc pri_queue.cc kd_rect.cc kd_node.cc kd_tree.cc \
-	qalsh.cc qalsh_plus.cc ann.cc main.cc
+	block_file.cc b_node.cc b_tree.cc qalsh.cc qalsh_plus.cc ann.cc \
+	main.cc
 OBJS=${SRCS:.cc=.o}
 
 CXX=g++ -std=c++11
@@ -21,6 +22,12 @@ kd_rect.o: kd_rect.h
 kd_node.o: kd_node.h
 
 kd_tree.o: kd_tree.h
+
+block_file.o: block_file.h
+
+b_node.o: b_node.h
+
+b_tree.o: b_tree.h
 
 qalsh.o: qalsh.h
 

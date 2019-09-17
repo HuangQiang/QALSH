@@ -50,8 +50,8 @@ BlockFile::BlockFile(				// constructor
 		//  "wb+": read or write data from or into binary doc. if file not
 		//  exist, we will construct a new file.
 		// ---------------------------------------------------------------------
-		assert(block_length_ >= BFHEAD_LENGTH);
-
+		
+		// assert(block_length_ >= BFHEAD_LENGTH);
 		fp_ = fopen(fname_, "wb+");
 		new_flag_ = true;
 		fwrite_number(block_length_);
@@ -83,22 +83,6 @@ BlockFile::BlockFile(				// constructor
 BlockFile::~BlockFile()				// destructor
 {
 	if (fp_) fclose(fp_);
-}
-
-// -----------------------------------------------------------------------------
-void BlockFile::fwrite_number(		// write an <int> value to bin file
-	int value)							// a value of type <int>
-{
-	put_bytes((char *) &value, SIZEINT);
-}
-
-// -----------------------------------------------------------------------------
-int BlockFile::fread_number() 		// read an <int> value from bin file
-{
-	char ca[SIZEINT];
-	get_bytes(ca, SIZEINT);
-
-	return *((int *)ca);
 }
 
 // -----------------------------------------------------------------------------
@@ -180,8 +164,8 @@ bool BlockFile::read_block(			// read a <block> from <index>
 	Block block,						// a <block> (return)
 	int index)							// pos of the block
 {
-	index++;						// extrnl block to intrnl block
-	assert(index > 0 && index <= num_blocks_);
+	++index;						// extrnl block to intrnl block
+	// assert(index > 0 && index <= num_blocks_);
 	seek_block(index);
 
 	get_bytes(block, block_length_);
@@ -204,8 +188,8 @@ bool BlockFile::write_block(		// write a <block> into <index>
 	Block block,						// a <block>
 	int index)							// position of the blocks
 {
-	index++;						// extrnl block to intrnl block
-	assert(index > 0 && index <= num_blocks_);
+	++index;						// extrnl block to intrnl block
+	// assert(index > 0 && index <= num_blocks_);
 	seek_block(index);
 
 	put_bytes(block, block_length_);// write this block
@@ -263,4 +247,3 @@ bool BlockFile::delete_last_blocks(	// delete last <num> blocks
 	act_block_ = 0;					// <act_block> = 0
 	return true;
 }
-

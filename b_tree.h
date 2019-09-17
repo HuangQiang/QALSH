@@ -34,18 +34,31 @@ public:
 
 protected:
 	// -------------------------------------------------------------------------
-	int read_header(				// read <root> from buffer
-		const char *buf);				// the buffer
+	int read_header(const char *buf) { // read <root> from buffer
+		memcpy(&root_, buf, SIZEINT);
+		return SIZEINT;
+	}
 
 	// -------------------------------------------------------------------------
-	int write_header(				// write <root> into buffer
-		char *buf);						// the buffer (return)
+	int write_header(char *buf) {	// write <root> into buffer
+		memcpy(buf, &root_, SIZEINT);
+		return SIZEINT;
+	}
 
 	// -------------------------------------------------------------------------
-	void load_root();				// load root of b-tree
+	void load_root() {				// load root of b-tree
+		if (root_ptr_ == NULL) {
+			root_ptr_ = new BIndexNode();
+			root_ptr_->init_restore(this, root_);
+		}
+	}
 
 	// -------------------------------------------------------------------------
-	void delete_root();				// delete root of b-tree
+	void delete_root() {			// delete root of b-tree
+		if (root_ptr_ != NULL) {
+			delete root_ptr_; root_ptr_ = NULL;
+		}
+	}
 };
 
 #endif // __B_TREE_H
