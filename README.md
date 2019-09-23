@@ -53,7 +53,7 @@ and Linear_Scan for c-ANN search. The parameters are introduced as follows.
   -nb     integer    number of blocks for c-ANN search
   -p      float      l_{p} norm, where 0 < p <= 2
   -z      float      symmetric factor of p-stable distribution (-1 <= z <= 1)
-  -c      float      approximation ratio for c-ANN search (0 < c < 1)
+  -c      float      approximation ratio for c-ANN search (c > 1)
   -ds     string     address of data  set
   -qs     string     address of query set
   -ts     string     address of truth set
