@@ -78,6 +78,7 @@ BNode* BNode::get_right_sibling()	// get the right-sibling node
 	return node;
 }
 
+
 // -----------------------------------------------------------------------------
 //  BIndexNode: structure of index node for b-tree
 // -----------------------------------------------------------------------------
@@ -268,6 +269,7 @@ void BIndexNode::add_new_child( // add a new entry from its child node
 	dirty_ = true;					// node modified, <dirty_> is true
 }
 
+
 // -----------------------------------------------------------------------------
 //  BLeafNode: structure of leaf node in b-tree
 // -----------------------------------------------------------------------------
@@ -440,9 +442,6 @@ void BLeafNode::write_to_buffer(	// write a b-node into buffer
 int BLeafNode::find_position_by_key(// find pos just less than input key
 	float key)							// input key
 {
-	// -------------------------------------------------------------------------
-	//  linear scan (right to left)
-	// -------------------------------------------------------------------------
 	int pos = -1;							
 	for (int i = num_keys_ - 1; i >= 0; --i) {
 		if (key_[i] <= key) {
@@ -476,11 +475,11 @@ BLeafNode* BLeafNode::get_right_sibling() // get right sibling node
 }
 
 // -----------------------------------------------------------------------------
-void BLeafNode::add_new_child( // add new child by input id and key
+void BLeafNode::add_new_child( 		// add new child by input id and key
 	int   id,							// input object id
 	float key)							// input key
 {
-	assert(num_entries_ < capacity_);
+	// assert(num_entries_ < capacity_);
 
 	id_[num_entries_] = id;			// add new id into its pos
 	if ((num_entries_ * SIZEINT) % LEAF_NODE_SIZE == 0) {

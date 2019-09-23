@@ -15,7 +15,7 @@ public:
 	BlockFile *file_;				// file in disk to store
 	
 	// -------------------------------------------------------------------------
-	BTree();						// constructor
+	BTree();						// default constructor
 	~BTree();						// destructor
 
 	// -------------------------------------------------------------------------
@@ -30,7 +30,7 @@ public:
 	// -------------------------------------------------------------------------
 	int bulkload(					// bulkload b-tree from hash table in mem
 		int   n,						// number of entries
-		const Result *hashtable);		// hash table
+		const Result *table);			// hash table
 
 protected:
 	// -------------------------------------------------------------------------

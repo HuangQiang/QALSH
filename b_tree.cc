@@ -4,7 +4,7 @@
 // -----------------------------------------------------------------------------
 //  BTree: b-tree to index hash values produced by qalsh
 // -----------------------------------------------------------------------------
-BTree::BTree()						// constructor
+BTree::BTree()						// default constructor
 {
 	root_     = -1;
 	file_     = NULL;
@@ -22,7 +22,6 @@ BTree::~BTree()						// destructor
 	if (root_ptr_ != NULL) {
 		delete root_ptr_; root_ptr_ = NULL;
 	}
-
 	if (file_ != NULL) {
 		delete file_; file_ = NULL;
 	}
@@ -87,7 +86,7 @@ void BTree::init_restore(			// load the tree from a tree file
 // -----------------------------------------------------------------------------
 int BTree::bulkload(				// bulkload a tree from memory
 	int   n,							// number of entries
-	const Result *hashtable)			// hash table
+	const Result *table)				// hash table
 {
 	BIndexNode *index_child   = NULL;
 	BIndexNode *index_prev_nd = NULL;
@@ -108,15 +107,15 @@ int BTree::bulkload(				// bulkload a tree from memory
 	int  end_block   = 0;			// position of last node
 
 	for (int i = 0; i < n; ++i) {
-		id  = hashtable[i].id_;
-		key = hashtable[i].key_;
+		id  = table[i].id_;
+		key = table[i].key_;
 
 		if (!leaf_act_nd) {
 			leaf_act_nd = new BLeafNode();
 			leaf_act_nd->init(0, this);
 
 			if (first_node) {
-				first_node = false;	// init <start_block>
+				first_node  = false; // init <start_block>
 				start_block = leaf_act_nd->get_block();
 			}
 			else {					// label sibling
@@ -131,7 +130,7 @@ int BTree::bulkload(				// bulkload a tree from memory
 
 		if (leaf_act_nd->isFull()) {// change next node to store entries
 			leaf_prev_nd = leaf_act_nd;
-			leaf_act_nd = NULL;
+			leaf_act_nd  = NULL;
 		}
 	}
 	if (leaf_prev_nd != NULL) {
@@ -199,7 +198,7 @@ int BTree::bulkload(				// bulkload a tree from memory
 		
 		last_start_block = start_block;// update info
 		last_end_block = end_block;	// build b-tree of higher level
-		current_level++;
+		++current_level;
 	}
 	root_ = last_start_block;		// update the <root>
 
