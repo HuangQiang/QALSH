@@ -50,8 +50,8 @@ BlockFile::BlockFile(				// constructor
 		//  "wb+": read or write data from or into binary doc. if file not
 		//  exist, we will construct a new file.
 		// ---------------------------------------------------------------------
-		
-		// assert(block_length_ >= BFHEAD_LENGTH);
+		assert(block_length_ >= BFHEAD_LENGTH);
+
 		fp_ = fopen(fname_, "wb+");
 		new_flag_ = true;
 		fwrite_number(block_length_);
@@ -90,7 +90,7 @@ BlockFile::~BlockFile()				// destructor
 //  info in the first block excluding the header of blockfile.
 // -----------------------------------------------------------------------------
 void BlockFile::read_header(		// read remain bytes excluding header
-	char* buffer)						// contain remain bytes (return)
+	char *buffer)						// contain remain bytes (return)
 {
 	fseek(fp_, BFHEAD_LENGTH, SEEK_SET); // jump out of first 8 bytes
 	get_bytes(buffer, block_length_ - BFHEAD_LENGTH); // read remaining bytes
@@ -114,7 +114,7 @@ void BlockFile::read_header(		// read remain bytes excluding header
 //  info in the first block excluding the header of blockfile.
 // -----------------------------------------------------------------------------
 void BlockFile::set_header(			// set remain bytes excluding header
-	const char* buffer)					// contain remain bytes
+	const char *buffer)					// contain remain bytes
 {
 	fseek(fp_, BFHEAD_LENGTH, SEEK_SET); // jump out of first 8 bytes
 	put_bytes(buffer, block_length_ - BFHEAD_LENGTH); // write remain bytes
@@ -212,7 +212,7 @@ int BlockFile::append_block(		// append new block at the end of file
 {
 	fseek(fp_, 0, SEEK_END);		// <fp_> point to the end of file
 	put_bytes(block, block_length_);// write a <block>
-	num_blocks_++;					// add 1 to <num_blocks_>
+	++num_blocks_;					// add 1 to <num_blocks_>
 	
 	fseek(fp_, SIZEINT, SEEK_SET);	// <fp_> point to pos of header
 	fwrite_number(num_blocks_);		// update <num_blocks_>

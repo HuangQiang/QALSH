@@ -54,8 +54,8 @@ QALSH::~QALSH()						// destructor
 		}
 	}
 	delete[] trees_; trees_ = NULL;
-	delete[] lptr_;  lptr_ = NULL;
-	delete[] rptr_;  rptr_ = NULL;
+	delete[] lptr_;  lptr_  = NULL;
+	delete[] rptr_;  rptr_  = NULL;
 }
 
 // -----------------------------------------------------------------------------
@@ -195,22 +195,21 @@ inline float QALSH::calc_l2_prob(	// calc prob <p1_> and <p2_> of L2 dist
 void QALSH::display()				// display parameters
 {
 	printf("Parameters of QALSH:\n");
-	printf("    n     = %d\n", n_pts_);
-	printf("    d     = %d\n", dim_);
-	printf("    B     = %d\n", B_);
+	printf("    n     = %d\n",   n_pts_);
+	printf("    d     = %d\n",   dim_);
+	printf("    B     = %d\n",   B_);
 	printf("    p     = %.1f\n", p_);
 	printf("    zeta  = %.1f\n", zeta_);
 	printf("    ratio = %.1f\n", appr_ratio_);
-	printf("    w     = %f\n", w_);
-	printf("    p1    = %f\n", p1_);
-	printf("    p2    = %f\n", p2_);
-	printf("    alpha = %f\n", alpha_);
-	printf("    beta  = %f\n", beta_);
-	printf("    delta = %f\n", delta_);
-	printf("    m     = %d\n", m_);
-	printf("    l     = %d\n", l_);
-	printf("    path  = %s\n", index_path_);
-	printf("\n");
+	printf("    w     = %f\n",   w_);
+	printf("    p1    = %f\n",   p1_);
+	printf("    p2    = %f\n",   p2_);
+	printf("    alpha = %f\n",   alpha_);
+	printf("    beta  = %f\n",   beta_);
+	printf("    delta = %f\n",   delta_);
+	printf("    m     = %d\n",   m_);
+	printf("    l     = %d\n",   l_);
+	printf("    path  = %s\n\n", index_path_);
 }
 
 // -----------------------------------------------------------------------------
@@ -247,24 +246,24 @@ int QALSH::bulkload(				// build m b-trees by bulkloading
 	//  write hash tables (indexed by B+ Tree) to disk
 	// -------------------------------------------------------------------------
 	char fname[200];
-	trees_ = new BTree*[m_];
 
-	Result *hashtable = new Result[n_pts_];
+	trees_ = new BTree*[m_];
+	Result *table = new Result[n_pts_];
 	for (int i = 0; i < m_; ++i) {
 		for (int j = 0; j < n_pts_; ++j) {
-			hashtable[j].id_  = j;
-			hashtable[j].key_ = calc_hash_value(i, data[j]);
+			table[j].id_  = j;
+			table[j].key_ = calc_hash_value(i, data[j]);
 		}
-		qsort(hashtable, n_pts_, sizeof(Result), ResultComp);
+		qsort(table, n_pts_, sizeof(Result), ResultComp);
 		
 		get_tree_filename(i, fname);
 		trees_[i] = new BTree();
 		trees_[i]->init(B_, fname);
-		if (trees_[i]->bulkload(n_pts_, (const Result *) hashtable)) {
+		if (trees_[i]->bulkload(n_pts_, (const Result *) table)) {
 			return 1;
 		}
 	}
-	delete[] hashtable; hashtable = NULL;
+	delete[] table; table = NULL;
 
 	return 0;
 }
@@ -447,12 +446,14 @@ long long QALSH::knn(				// k-NN search
 
 				PageBuffer *lptr = lptr_[i];
 				PageBuffer *rptr = rptr_[i];
+
 				// -------------------------------------------------------------
 				//  step 2.1: compute <ldist> and <rdist>
 				// -------------------------------------------------------------
 				float dist  = -1.0f;
 				float ldist = MAXREAL;
 				float rdist = MAXREAL;
+
 				if (lptr->size_ != -1) ldist = calc_dist(q_val_[i], lptr);
 				if (rptr->size_ != -1) rdist = calc_dist(q_val_[i], rptr);
 
@@ -501,7 +502,7 @@ long long QALSH::knn(				// k-NN search
 				}
 				else {
 					bucket_flag_[i] = false;
-					num_bucket++;
+					++num_bucket;
 				}
 				if (num_bucket >= m_ || dist_io_ >= candidates) break;
 			}
@@ -699,7 +700,7 @@ void QALSH::init_search_params(		// init parameters for k-NN search
 			// ---------------------------------------------------------------------
 			index_node = new BIndexNode();
 			index_node->init_restore(tree, block);
-			page_io_++;
+			++page_io_;
 
 			// ---------------------------------------------------------------------
 			//  find the leaf node whose value is closest and larger than the key
@@ -729,7 +730,7 @@ void QALSH::init_search_params(		// init parameters for k-NN search
 
 				index_node = new BIndexNode();
 				index_node->init_restore(tree, block);
-				page_io_++;			// access a new node (a new page)
+				++page_io_;			// access a new node (a new page)
 			}
 
 			// ---------------------------------------------------------------------
@@ -763,7 +764,7 @@ void QALSH::init_search_params(		// init parameters for k-NN search
 				else {
 					rptr->size_ = increment;
 				}
-				page_io_++;
+				++page_io_;
 			}
 			else {					
 				// -----------------------------------------------------------------
@@ -787,7 +788,7 @@ void QALSH::init_search_params(		// init parameters for k-NN search
 					lptr->leaf_pos_ = pos * increment + increment - 1;
 					lptr->size_ = increment;
 				}
-				page_io_++;
+				++page_io_;
 
 				// -----------------------------------------------------------------
 				//  init right buffer
@@ -819,7 +820,7 @@ void QALSH::init_search_params(		// init parameters for k-NN search
 						else {
 							rptr->size_ = increment;
 						}
-						page_io_++;
+						++page_io_;
 					}
 				}
 			}
@@ -846,7 +847,7 @@ void QALSH::init_search_params(		// init parameters for k-NN search
 				lptr->leaf_pos_ = pos * increment + increment - 1;
 				lptr->size_ = increment;
 			}
-			page_io_++;
+			++page_io_;
 			
 			// ---------------------------------------------------------------------
 			//  (2) init right buffer
@@ -951,7 +952,7 @@ void QALSH::update_left_buffer(		// update left buffer
 			
 			lptr->leaf_pos_ = num_entries - 1;
 			lptr->size_ = num_entries - pos * increment;
-			page_io_++;
+			++page_io_;
 		}
 		else {
 			lptr->leaf_node_ = NULL;
@@ -1006,7 +1007,7 @@ void QALSH::update_right_buffer(	// update right buffer
 			else {
 				rptr->size_ = increment;
 			}
-			page_io_++;
+			++page_io_;
 		}
 		else {
 			rptr->leaf_node_ = NULL;

@@ -150,16 +150,6 @@ float calc_recall(					// calc recall (percentage)
 	const Result *result);				// results returned by algorithms
 
 // -----------------------------------------------------------------------------
-int ground_truth(					// find ground truth
-	int   n,							// number of data  objects
-	int   qn,							// number of query objects
-	int   d,							// dimensionality
-	float p,							// the p value of Lp norm, p in (0,2]
-	const float **data,					// data set
-	const float **query,				// query set
-	const char  *truth_set);			// address of truth set
-
-// -----------------------------------------------------------------------------
 long long linear(					// linear scan search
 	int   n,							// number of data objects
 	int   d,							// dimensionality
@@ -169,5 +159,15 @@ long long linear(					// linear scan search
 	const float *query,					// query object
 	const char *data_folder,			// data folder
 	MinK_List *list);					// k-NN results (return)
+
+// -----------------------------------------------------------------------------
+int ground_truth(					// find ground truth
+	int   n,							// number of data  objects
+	int   qn,							// number of query objects
+	int   d,							// dimensionality
+	float p,							// the p value of Lp norm, p in (0,2]
+	const float **data,					// data set
+	const float **query,				// query set
+	const char  *truth_set);			// address of truth set
 
 #endif // __UTIL_H

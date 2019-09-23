@@ -30,9 +30,9 @@ public:
 		int *object_id);				// object id with leaf order (return)
 
 protected:
-	int   n_pts_;					// number of data objects
-	int   dim_;						// dimensionality
-	int   kd_leaf_size_;			// leaf size of kd-tree
+	int n_pts_;						// number of data objects
+	int dim_;						// dimensionality
+	int kd_leaf_size_;				// leaf size of kd-tree
 
 	int   *object_id_;				// data objects id
 	float *bnd_box_low_;			// bounding box - low  object

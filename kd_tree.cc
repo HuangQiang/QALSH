@@ -14,7 +14,6 @@ KD_Tree::KD_Tree(					// constructor
 	kd_leaf_size_ = kd_leaf_size;
 	data_         = data;
 	object_id_    = new int[n_pts_];
-	
 	for (int i = 0; i < n_pts_; ++i) object_id_[i] = i;
 
 	KD_Rect bnd_box(dim_);
@@ -23,7 +22,7 @@ KD_Tree::KD_Tree(					// constructor
 	bnd_box_low_  = new float[dim_];
 	bnd_box_high_ = new float[dim_];
 	for (int i = 0; i < dim_; ++i) {
-		bnd_box_low_[i]  = bnd_box.low_[i];
+		bnd_box_low_[i] = bnd_box.low_[i];
 		bnd_box_high_[i] = bnd_box.high_[i];
 	}
 	root_ = rkd_tree(n_pts_, object_id_, bnd_box);
@@ -180,13 +179,13 @@ void KD_Tree::calc_stat(			// calc median and variance value
 	// -------------------------------------------------------------------------
 	//  calc mean, min, and max
 	// -------------------------------------------------------------------------
-	float *arr = new float[n];
+	vector<float> arr(n);
 	float val  = data_[object_id[0]][d];
 
 	arr[0] = val;
-	min = val;
-	max = val;
-	mean = val;
+	min    = val;
+	max    = val;
+	mean   = val;
 	for (int i = 1; i < n; ++i) {
 		val = data_[object_id[i]][d];
 		arr[i] = val;
@@ -200,7 +199,7 @@ void KD_Tree::calc_stat(			// calc median and variance value
 	// -------------------------------------------------------------------------
 	//  calc median
 	// -------------------------------------------------------------------------
-	sort(arr, arr + n);
+	sort(arr.begin(), arr.end());
 	if (n % 2 != 0) median = arr[n / 2];
 	else median = (arr[n / 2 - 1] + arr[n / 2]) / 2;
 
@@ -212,11 +211,6 @@ void KD_Tree::calc_stat(			// calc median and variance value
 		variance += SQR(data_[object_id[i]][d] - mean);
 	}
 	variance /= n;
-
-	// -------------------------------------------------------------------------
-	//  release space
-	// -------------------------------------------------------------------------
-	delete[] arr; arr = NULL;
 }
 
 // -----------------------------------------------------------------------------
@@ -281,11 +275,8 @@ void KD_Tree::search(				// k-NN search
 	const float *query,					// query object
 	MinK_List *list)					// k-NN results (return)
 {
-	assert(top_k <= n_pts_);
-	ratio = POW(ratio);
-	float box_dist = calc_box_dist(query);
-
-	root_->search(box_dist, ratio, query, list);
+	// assert(top_k <= n_pts_);
+	root_->search(calc_box_dist(query), SQR(ratio), query, list);
 }
 
 // -----------------------------------------------------------------------------
@@ -293,15 +284,12 @@ float KD_Tree::calc_box_dist(		// compute distance from point to box
 	const float* query)					// query point
 {
 	float dist = 0.0f;
-	float tmp  = 0.0f;
 	for (int i = 0; i < dim_; ++i) {
 		if (query[i] < bnd_box_low_[i]) {
-			tmp = bnd_box_low_[i] - query[i];
-			dist = SUM(dist, POW(tmp));
+			dist += SQR(bnd_box_low_[i] - query[i]);
 		}
 		else if (query[i] > bnd_box_high_[i]) {
-			tmp = query[i] - bnd_box_high_[i];
-			dist = SUM(dist, POW(tmp));
+			dist += SQR(query[i] - bnd_box_high_[i]);
 		}
 	}
 	return dist;

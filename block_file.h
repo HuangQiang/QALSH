@@ -24,38 +24,39 @@ public:
 		int  b_length,					// length of a block
 		const char *name);				// file name
 
+	// -------------------------------------------------------------------------
 	~BlockFile();					// destructor
 
 	// -------------------------------------------------------------------------
-	void put_bytes(const char *bytes, int num) // write <bytes> of length <num>
+	inline void put_bytes(const char *bytes, int num) // write <bytes> of length <num>
 	{ fwrite(bytes, num, 1, fp_); }
 
 	// -------------------------------------------------------------------------
-	void get_bytes(char *bytes, int num) // read <bytes> of length <num>
+	inline void get_bytes(char *bytes, int num) // read <bytes> of length <num>
 	{ fread(bytes, num, 1, fp_); }
 
 	// -------------------------------------------------------------------------
-	void seek_block(int bnum) 		// move <fp_> to the right with <bnum>
+	inline void seek_block(int bnum) // move <fp_> to the right with <bnum>
 	{ fseek(fp_, (bnum-act_block_)*block_length_, SEEK_CUR); }
 
 	// -------------------------------------------------------------------------
-	bool file_new() 				// whether this block is modified?
+	inline bool file_new() 			// whether this block is modified?
 	{ return new_flag_; }
 
 	// -------------------------------------------------------------------------
-	int get_blocklength()			// get block length
+	inline int get_blocklength()	// get block length
 	{ return block_length_; }
 
 	// -------------------------------------------------------------------------
-	int get_num_of_blocks()			// get number of blocks
+	inline int get_num_of_blocks()	// get number of blocks
 	{ return num_blocks_; }
 
 	// -------------------------------------------------------------------------
-	void fwrite_number(int num) 	// write a value (type int)
+	inline void fwrite_number(int num) // write a value (type int)
 	{ put_bytes((char *) &num, SIZEINT); }
 
 	// -------------------------------------------------------------------------
-	int fread_number()				// read a value (type int)
+	inline int fread_number()		// read a value (type int)
 	{ char ca[SIZEINT]; get_bytes(ca, SIZEINT); return *((int *)ca); }
 
 	// -------------------------------------------------------------------------

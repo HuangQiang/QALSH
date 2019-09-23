@@ -125,6 +125,16 @@ int knn_of_qalsh_plus(				// k-NN search of qalsh+
 	const char *data_folder,			// data folder
 	const char *output_folder)			// output folder
 {
+	char output_set[200];
+	strcpy(output_set, output_folder);
+	strcat(output_set, "qalsh_plus.out");
+
+	FILE *fp = fopen(output_set, "a+");
+	if (!fp) {
+		printf("Could not create %s\n", output_set);
+		return 1;
+	}
+
 	// -------------------------------------------------------------------------
 	//  load qalsh+ 
 	// -------------------------------------------------------------------------
@@ -142,16 +152,6 @@ int knn_of_qalsh_plus(				// k-NN search of qalsh+
 	// -------------------------------------------------------------------------
 	//  c-k-ANN search by QALSH+
 	// -------------------------------------------------------------------------
-	char output_set[200];
-	strcpy(output_set, output_folder);
-	strcat(output_set, "qalsh_plus.out");
-
-	FILE *fp = fopen(output_set, "a+");
-	if (!fp) {
-		printf("Could not create %s\n", output_set);
-		return 1;
-	}
-
 	printf("Top-k NN Search by QALSH+: \n");
 	for (int nb = 2; nb <= 10; ++nb) {
 		printf("  nb = %d\n", nb);

@@ -11,7 +11,6 @@ typedef char Block[];
 // -----------------------------------------------------------------------------
 #define MIN(a, b)	(((a) < (b)) ? (a) : (b))
 #define MAX(a, b)	(((a) > (b)) ? (a) : (b))
-#define POW(x)		((x) * (x))
 #define SQR(x)		((x) * (x))
 #define SUM(x, y)	((x) + (y))
 #define DIFF(x, y)	((y) - (x))

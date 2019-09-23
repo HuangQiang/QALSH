@@ -48,14 +48,14 @@ do
     ./qalsh -alg 2 -qn ${qn} -d ${d} -qs ${dPath}.q -ts ${dPath}.gt${p} \
         -df ${dFolder} -of ${oFolder}
 
-    # # --------------------------------------------------------------------------
-    # #  QALSH
-    # # --------------------------------------------------------------------------
-    # ./qalsh -alg 3 -n ${n} -d ${d} -B ${B} -p ${p} -z ${z} -c ${c} \
-    #     -ds ${dPath}.ds -df ${dFolder} -of ${oFolder}
+    # --------------------------------------------------------------------------
+    #  QALSH
+    # --------------------------------------------------------------------------
+    ./qalsh -alg 3 -n ${n} -d ${d} -B ${B} -p ${p} -z ${z} -c ${c} \
+        -ds ${dPath}.ds -df ${dFolder} -of ${oFolder}
 
-    # ./qalsh -alg 4 -qn ${qn} -d ${d} -qs ${dPath}.q -ts ${dPath}.gt${p} \
-    #     -df ${dFolder} -of ${oFolder}
+    ./qalsh -alg 4 -qn ${qn} -d ${d} -qs ${dPath}.q -ts ${dPath}.gt${p} \
+        -df ${dFolder} -of ${oFolder}
 
     # --------------------------------------------------------------------------
     #  Linear Scan

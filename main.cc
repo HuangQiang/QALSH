@@ -238,6 +238,9 @@ int main(int nargs, char **args)
 		if (read_ground_truth(qn, truth_set, R) == 1) return 1;
 	}
 
+	// -------------------------------------------------------------------------
+	//  methods
+	// -------------------------------------------------------------------------
 	switch (alg) {
 	case 0:
 		ground_truth(n, qn, d, p, (const float **) data, 

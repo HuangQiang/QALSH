@@ -28,13 +28,13 @@ public:
 	virtual void write_to_buffer(char *buf) {}
 
 	// -------------------------------------------------------------------------
-	virtual int get_entry_size() { return 0; }
+	virtual inline int get_entry_size() { return 0; }
 
 	// -------------------------------------------------------------------------
 	virtual int find_position_by_key(float key) { return -1; }
 
 	// -------------------------------------------------------------------------
-	virtual float get_key(int index) { return -1.0f; }
+	virtual inline float get_key(int index) { return -1.0f; }
 
 	// -------------------------------------------------------------------------
 	virtual BNode* get_left_sibling(); // get left sibling node
@@ -42,35 +42,39 @@ public:
 	virtual BNode* get_right_sibling(); // get right sibling node
 
 	// -------------------------------------------------------------------------
-	int get_block() { return block_; }
+	inline int get_block() { return block_; }
 
 	// -------------------------------------------------------------------------
-	int get_num_entries() { return num_entries_; }
+	inline int get_num_entries() { return num_entries_; }
 
 	// -------------------------------------------------------------------------
-	int get_level() { return level_; }
+	inline int get_level() { return level_; }
 
 	// -------------------------------------------------------------------------
 	//	<level>: SIZECHAR
 	//	<num_entries> <left_sibling> and <right_sibling>: SIZEINT
 	//  get header size in b-node
 	// -------------------------------------------------------------------------
-	int get_header_size() { return SIZECHAR+SIZEINT*3; } 
+	inline int get_header_size() { return SIZECHAR+SIZEINT*3; } 
 
 	// -------------------------------------------------------------------------
-	float get_key_of_node() { return key_[0]; }	
+	inline float get_key_of_node() { return key_[0]; }	
 
 	// -------------------------------------------------------------------------
-	bool isFull() { 
+	inline bool isFull() { 
 		if (num_entries_ >= capacity_) return true; 
 		else return false; 
 	}
 
 	// -------------------------------------------------------------------------
-	void set_left_sibling(int left_sibling) { left_sibling_ = left_sibling; }
+	inline void set_left_sibling(int left_sibling) { 
+		left_sibling_ = left_sibling; 
+	}
 
 	// -------------------------------------------------------------------------
-	void set_right_sibling(int right_sibling) { right_sibling_ = right_sibling; }
+	inline void set_right_sibling(int right_sibling) { 
+		right_sibling_ = right_sibling; 
+	}
 
 protected:
 	char  level_;					// level of b-tree (level > 0)
@@ -112,14 +116,14 @@ public:
 	// -------------------------------------------------------------------------
 	//  entry: <key_>: SIZEFLOAT and <son_>: SIZEINT
 	// -------------------------------------------------------------------------
-	virtual int get_entry_size() { return SIZEFLOAT + SIZEINT; }
+	virtual inline int get_entry_size() { return SIZEFLOAT + SIZEINT; }
 
 	// -------------------------------------------------------------------------
 	virtual int find_position_by_key(// find pos just less than input key
 		float key);						// input key
 
 	// -------------------------------------------------------------------------
-	virtual float get_key(int index) { 
+	virtual inline float get_key(int index) { 
 		// assert(index >= 0 && index < num_entries_); 
 		return key_[index]; 
 	}
@@ -130,7 +134,7 @@ public:
 	virtual BIndexNode* get_right_sibling(); // get right sibling node
 
 	// -------------------------------------------------------------------------
-	int get_son(int index) {		// get son indexed by <index>
+	inline int get_son(int index) {	// get son indexed by <index>
 		// assert(index >= 0 && index < num_entries_); 
 		return son_[index]; 
 	}
@@ -170,14 +174,14 @@ public:
 		char *buf);						// store info of a b-node (return)
 
 	// -------------------------------------------------------------------------
-	virtual int get_entry_size() { return SIZEINT; } // get entry size in b-node
+	virtual inline int get_entry_size() { return SIZEINT; }
 
 	// -------------------------------------------------------------------------
 	virtual int find_position_by_key( // find pos just less than input key
 		float key);						// input key
 
 	// -------------------------------------------------------------------------
-	virtual float get_key(int index) { 
+	virtual inline float get_key(int index) { 
 		// assert(index >= 0 && index < num_keys_);
 		return key_[index]; 
 	}
@@ -190,19 +194,19 @@ public:
 	// -------------------------------------------------------------------------
 	//  array of <key_> with number <capacity_keys_> + <number_keys_> (SIZEINT)
 	// -------------------------------------------------------------------------
-	int get_key_size(int block_length) { // block length
+	inline int get_key_size(int block_length) { // block length
 		capacity_keys_ = (int) ceil((float) block_length / LEAF_NODE_SIZE); 
 		return capacity_keys_ * SIZEFLOAT + SIZEINT;
 	} 
 
 	// -------------------------------------------------------------------------
-	int get_increment() { return LEAF_NODE_SIZE / get_entry_size(); }
+	inline int get_increment() { return LEAF_NODE_SIZE / get_entry_size(); }
 
 	// -------------------------------------------------------------------------
-	int get_num_keys() { return num_keys_; }
+	inline int get_num_keys() { return num_keys_; }
 
 	// -------------------------------------------------------------------------
-	int get_entry_id(int index) { 
+	inline int get_entry_id(int index) { 
 		// assert(index >= 0 && index < num_entries_); 
 		return id_[index];
 	}

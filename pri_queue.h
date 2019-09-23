@@ -13,28 +13,25 @@ public:
 	~MinK_List();					// destructor
 
 	// -------------------------------------------------------------------------
-	void reset() { num_ = 0; }
+	inline void reset() { num_ = 0; }
 
 	// -------------------------------------------------------------------------
-	float min_key()	{ return (num_ > 0 ? list_[0].key_ : MAXREAL); }
+	inline float min_key() { return (num_>0 ? list_[0].key_ : MAXREAL); }
 
 	// -------------------------------------------------------------------------
-	float max_key()	{ return (num_ >= k_ ? list_[k_ - 1].key_ : MAXREAL); }
+	inline float max_key() { return (num_>=k_ ? list_[k_ - 1].key_ : MAXREAL); }
 
 	// -------------------------------------------------------------------------
-	float ith_key(int i) { return (i < num_ ? list_[i].key_ : MAXREAL); }
+	inline float ith_key(int i) { return (i<num_ ? list_[i].key_ : MAXREAL); }
 
 	// -------------------------------------------------------------------------
-	int ith_id(int i) { return (i < num_ ? list_[i].id_ : MININT); }
+	inline int ith_id(int i) { return (i<num_ ? list_[i].id_ : MININT); }
 
 	// -------------------------------------------------------------------------
-	int size() { return num_; }
+	inline int size() { return num_; }
 
 	// -------------------------------------------------------------------------
-	bool isFull() {					// is full?
-		if (num_ >= k_) return true;
-		else return false;
-	}
+	inline bool isFull() { if (num_ >= k_) return true; else return false; }
 	
 	// -------------------------------------------------------------------------
 	float insert(					// insert item

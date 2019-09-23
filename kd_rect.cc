@@ -4,21 +4,21 @@
 //	KD_Rect: orthogonal rectangle for bounding rectangle of kd-tree
 // -----------------------------------------------------------------------------
 KD_Rect::KD_Rect(					// constructor
-	int   dim,							// dimension
+	int dim,							// dimension
 	float l,							// lower bound
 	float h)							// higher bound
 {
-	low_  = new float[dim];
+	low_ = new float[dim];
 	high_ = new float[dim];
-	
+
 	memset(low_,  l, dim * SIZEFLOAT);
 	memset(high_, h, dim * SIZEFLOAT);
 }
 
 // -----------------------------------------------------------------------------
 KD_Rect::KD_Rect(					// copy constructor
-	int   dim,							// dimension
-	const KD_Rect &rect)				// rectangle to copy
+	int dim,							// dimension
+	const KD_Rect &rect)				// copy item
 {
 	low_  = new float[dim];
 	high_ = new float[dim];

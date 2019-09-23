@@ -56,7 +56,7 @@ int ResultCompDesc(					// compare function for qsort (descending)
 void create_dir(					// create directory
 	char *path)							// input path
 {
-	int len = (int)strlen(path);
+	int len = (int) strlen(path);
 	for (int i = 0; i < len; ++i) {
 		if (path[i] == '/') {
 			char ch = path[i + 1];
@@ -145,7 +145,7 @@ int write_data_new_form(			// write dataset with new format
 		// ---------------------------------------------------------------------
 		get_data_filename(i, data_path, fname);
 
-		left = i * num;
+		left  = i * num;
 		right = left + num;
 		if (right > n) right = n;	
 		write_data_to_buffer(d, left, right, data, buffer);
@@ -551,53 +551,6 @@ float calc_recall(					// calc recall (percentage)
 }
 
 // -----------------------------------------------------------------------------
-int ground_truth(					// find ground truth
-	int   n,							// number of data  objects
-	int   qn,							// number of query objects
-	int   d,							// dimensionality
-	float p,							// the p value of Lp norm, p in (0,2]
-	const float **data,					// data set
-	const float **query,				// query set
-	const char  *truth_set)				// address of truth set
-{
-	gettimeofday(&g_start_time, NULL);
-	FILE *fp = fopen(truth_set, "w");
-	if (!fp) {
-		printf("Could not create %s\n", truth_set);
-		return 1;
-	}
-
-	// -------------------------------------------------------------------------
-	//  find ground truth results (using linear scan method)
-	// -------------------------------------------------------------------------
-	fprintf(fp, "%d %d\n", qn, MAXK);
-
-	MinK_List *list = new MinK_List(MAXK);
-	for (int i = 0; i < qn; ++i) {
-		list->reset();
-		float kdist = MAXREAL;
-		for (int j = 0; j < n; ++j) {
-			float dist = calc_lp_dist(d, p, kdist, data[j], query[i]);
-			kdist = list->insert(dist, j);
-		}
-
-		for (int j = 0; j < MAXK; ++j) {
-			fprintf(fp, "%d %f ", list->ith_id(j), list->ith_key(j));
-		}
-		fprintf(fp, "\n");
-	}
-	fclose(fp);
-	delete list; list = NULL;
-
-	gettimeofday(&g_end_time, NULL);
-	float truth_time = g_end_time.tv_sec - g_start_time.tv_sec + 
-		(g_end_time.tv_usec - g_start_time.tv_usec) / 1000000.0f;
-	printf("Ground Truth: %f Seconds\n\n", truth_time);
-
-	return 0;
-}
-
-// -----------------------------------------------------------------------------
 long long linear(					// linear scan search
 	int   n,							// number of data objects
 	int   d,							// dimensionality
@@ -655,4 +608,51 @@ long long linear(					// linear scan search
 	delete[] data; data = NULL;
 	
 	return (long long) total_file;
+}
+
+// -----------------------------------------------------------------------------
+int ground_truth(					// find ground truth
+	int   n,							// number of data  objects
+	int   qn,							// number of query objects
+	int   d,							// dimensionality
+	float p,							// the p value of Lp norm, p in (0,2]
+	const float **data,					// data set
+	const float **query,				// query set
+	const char  *truth_set)				// address of truth set
+{
+	gettimeofday(&g_start_time, NULL);
+	FILE *fp = fopen(truth_set, "w");
+	if (!fp) {
+		printf("Could not create %s\n", truth_set);
+		return 1;
+	}
+
+	// -------------------------------------------------------------------------
+	//  find ground truth results (using linear scan method)
+	// -------------------------------------------------------------------------
+	fprintf(fp, "%d %d\n", qn, MAXK);
+
+	MinK_List *list = new MinK_List(MAXK);
+	for (int i = 0; i < qn; ++i) {
+		list->reset();
+		float kdist = MAXREAL;
+		for (int j = 0; j < n; ++j) {
+			float dist = calc_lp_dist(d, p, kdist, data[j], query[i]);
+			kdist = list->insert(dist, j);
+		}
+
+		for (int j = 0; j < MAXK; ++j) {
+			fprintf(fp, "%d %f ", list->ith_id(j), list->ith_key(j));
+		}
+		fprintf(fp, "\n");
+	}
+	fclose(fp);
+	delete list; list = NULL;
+
+	gettimeofday(&g_end_time, NULL);
+	float truth_time = g_end_time.tv_sec - g_start_time.tv_sec + 
+		(g_end_time.tv_usec - g_start_time.tv_usec) / 1000000.0f;
+	printf("Ground Truth: %f Seconds\n\n", truth_time);
+
+	return 0;
 }
