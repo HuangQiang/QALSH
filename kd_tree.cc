@@ -1,4 +1,9 @@
-#include "headers.h"
+#include <algorithm>
+
+#include "def.h"
+#include "kd_rect.h"
+#include "kd_node.h"
+#include "kd_tree.h"
 
 // -----------------------------------------------------------------------------
 //	KD_Tree: structure for approximate and exact nearest neighbor search
@@ -179,7 +184,7 @@ void KD_Tree::calc_stat(			// calc median and variance value
 	// -------------------------------------------------------------------------
 	//  calc mean, min, and max
 	// -------------------------------------------------------------------------
-	vector<float> arr(n);
+	std::vector<float> arr(n);
 	float val  = data_[object_id[0]][d];
 
 	arr[0] = val;
@@ -297,7 +302,7 @@ float KD_Tree::calc_box_dist(		// compute distance from point to box
 
 // -----------------------------------------------------------------------------
 void KD_Tree::traversal(			// traversal kd-tree to get leaf info
-	vector<int> &block_size,			// leaf size (return)
+	std::vector<int> &block_size,			// leaf size (return)
 	int *object_id)						// object id with leaf order (return)
 {
 	for (int i = 0; i < n_pts_; ++i) {

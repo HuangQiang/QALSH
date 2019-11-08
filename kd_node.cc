@@ -1,4 +1,9 @@
-#include "headers.h"
+#include <algorithm>
+
+#include "def.h"
+#include "util.h"
+#include "pri_queue.h"
+#include "kd_node.h"
 
 
 // -----------------------------------------------------------------------------
@@ -41,7 +46,7 @@ void KD_Leaf::search(				// tree search
 
 // -----------------------------------------------------------------------------
 void KD_Leaf::traversal(			// traversal kd-tree
-	vector<int> &leaf_size)				// leaf size (return)
+	std::vector<int> &leaf_size)		// leaf size (return)
 {
 	leaf_size.push_back(n_pts_);
 }
@@ -128,7 +133,7 @@ void KD_Split::search(				// tree search
 
 // -----------------------------------------------------------------------------
 void KD_Split::traversal(			// traversal kd-tree
-	vector<int> &leaf_size)				// leaf size (return)
+	std::vector<int> &leaf_size)		// leaf size (return)
 {
 	child_[0]->traversal(leaf_size);
 	child_[1]->traversal(leaf_size);

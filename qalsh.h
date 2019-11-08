@@ -2,9 +2,9 @@
 #define __QALSH_H
 
 class BNode;
-class BIndexNode;
 class BLeafNode;
 class BTree;
+class MinK_List;
 
 // -----------------------------------------------------------------------------
 //  PageBuffer: a buffer of one page for c-k-ANN search
@@ -56,7 +56,7 @@ public:
 		int top_k,						// top-k value
 		float R,						// limited search range
 		const float *query,				// query object
-		const vector<int> &object_id,	// object id mapping
+		const std::vector<int> &object_id, // object id mapping
 		const char *data_folder,		// data folder
 		MinK_List *list);				// k-NN results (return)
 		

@@ -1,4 +1,14 @@
-#include "headers.h"
+#include <algorithm>
+#include <cstring>
+
+#include "def.h"
+#include "util.h"
+#include "pri_queue.h"
+#include "random.h"
+#include "b_node.h"
+#include "b_tree.h"
+#include "qalsh.h"
+
 
 // -----------------------------------------------------------------------------
 QALSH::QALSH()						// constructor
@@ -530,7 +540,7 @@ long long QALSH::knn(				// k-NN search
 	int top_k,							// top-k value
 	float R,							// limited search range
 	const float *query,					// query object
-	const vector<int> &object_id,		// object id mapping
+	const std::vector<int> &object_id,	// object id mapping
 	const char *data_folder,			// data folder
 	MinK_List *list)					// k-NN results (return)
 {
@@ -896,7 +906,7 @@ float QALSH::update_radius(			// update radius
 	//  find an array of projected distance which is closest to the query in
 	//  each of <m> hash tables 
 	// -------------------------------------------------------------------------
-	vector<float> list;
+	std::vector<float> list;
 	for (int i = 0; i < m_; ++i) {
 		if (lptr_[i]->size_ != -1) {
 			list.push_back(calc_dist(q_val_[i], lptr_[i]));
@@ -905,7 +915,7 @@ float QALSH::update_radius(			// update radius
 			list.push_back(calc_dist(q_val_[i], rptr_[i]));
 		}
 	}
-	sort(list.begin(), list.end());
+	std::sort(list.begin(), list.end());
 
 	// -------------------------------------------------------------------------
 	//  find the median distance and return the new radius

@@ -1,6 +1,7 @@
 #ifndef __KD_TREE_H
 #define __KD_TREE_H
 
+class KD_Rect;
 class KD_Node;
 class MinK_List;
 
@@ -26,7 +27,7 @@ public:
 
 	// -------------------------------------------------------------------------
 	void traversal(					// traversal kd-tree to get leaf info
-		vector<int> &leaf_size,			// leaf size (return)
+		std::vector<int> &leaf_size,	// leaf size (return)
 		int *object_id);				// object id with leaf order (return)
 
 protected:

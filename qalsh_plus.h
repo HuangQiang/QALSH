@@ -1,15 +1,15 @@
 #ifndef __QALSH_PLUS_H
 #define __QALSH_PLUS_H
 
-#include <unordered_map>
-using namespace std;
+class MinK_List;
+class QALSH;
 
 // -----------------------------------------------------------------------------
 //  Blocks: an block which stores hash tables for some of data objects
 // -----------------------------------------------------------------------------
 struct Blocks {
 	int n_pts_;
-	vector<int> index_;
+	std::vector<int> index_;
 	QALSH *lsh_;
 
 	Blocks() { n_pts_ = -1; lsh_ = NULL; }
@@ -64,12 +64,12 @@ protected:
 	char  index_path_[200];			// index path
 
 	int   num_blocks_;				// number of blocks 
-	vector<Blocks*> blocks_;		// blocks
+	std::vector<Blocks*> blocks_;	// blocks
 
 	int   sample_n_pts_;			// number of sample data objects
-	vector<int> sample_id_;			// sample data id
-	unordered_map<int, int> sample_id_to_block_; // sample data id to block	
 	QALSH *lsh_;					// index of sample data objects
+	std::vector<int> sample_id_;	// sample data id
+	std::unordered_map<int, int> sample_id_to_block_; // sample data id to block
 
 	// -------------------------------------------------------------------------
 	int bulkload(					// bulkloading for each block
@@ -78,7 +78,7 @@ protected:
 	// -------------------------------------------------------------------------
 	int kd_tree_partition(			// kd-tree partition 
 		const float **data,				// data objects
-		vector<int> &block_size,		// block size (return)
+		std::vector<int> &block_size,	// block size (return)
 		int *new_order_id);				// new order id (return)
 
 	// -------------------------------------------------------------------------
@@ -86,13 +86,13 @@ protected:
 		int   n,						// number of data objects
 		int   d,						// data dimension
 		const float **data,				// data objects
-		vector<vector<float> > &shift_data); // shift data objects (return)
+		std::vector<std::vector<float> > &shift_data); // shift data objects (return)
 
 	// -------------------------------------------------------------------------
 	int drusilla_select(			// drusilla select
 		int   n,						// number of data objects
 		int   d,						// data dimension
-		const vector<vector<float> > &shift_data, // shift data objects
+		const std::vector<std::vector<float> > &shift_data, // shift data objects
 		const int *new_order_id,		// new order data id
 		int   *sample_id);				// sample data id (return)
 
@@ -106,7 +106,7 @@ protected:
 	int get_block_order(			// get block order
 		int nb,							// number of blocks for search
 		MinK_List *list,				// top-t results from sample data
-		vector<int> &block_order);		// block order (return)
+		std::vector<int> &block_order);	// block order (return)
 };
 
 #endif // __QALSH_PLUS_H

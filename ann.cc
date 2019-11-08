@@ -1,4 +1,14 @@
-#include "headers.h"
+#include <algorithm>
+#include <cstring>
+#include <unordered_map>
+#include <sys/time.h>
+
+#include "def.h"
+#include "util.h"
+#include "pri_queue.h"
+#include "qalsh.h"
+#include "qalsh_plus.h"
+#include "ann.h"
 
 // -----------------------------------------------------------------------------
 int linear_scan(					// brute-force linear scan (data in disk)

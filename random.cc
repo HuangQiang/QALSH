@@ -1,4 +1,7 @@
-#include "headers.h"
+#include <algorithm>
+
+#include "def.h"
+#include "random.h"
 
 // -----------------------------------------------------------------------------
 //  functions used for generating random variables (r.v.).

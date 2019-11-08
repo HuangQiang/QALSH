@@ -1,4 +1,10 @@
-#include "headers.h"
+#include <algorithm>
+#include <cstring>
+
+#include "def.h"
+#include "util.h"
+#include "ann.h"
+
 
 // -----------------------------------------------------------------------------
 void usage() 						// usage of the package

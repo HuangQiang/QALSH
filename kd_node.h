@@ -1,9 +1,6 @@
 #ifndef __KD_NODE_H
 #define __KD_NODE_H
 
-#include <vector>
-using namespace std;
-
 class MinK_List;
 
 // -----------------------------------------------------------------------------
@@ -21,7 +18,7 @@ public:
 		MinK_List *list) = 0;			// k-NN results (return)
 
 	virtual void traversal(			// traversal kd-tree
-		vector<int> &leaf_size) = 0;	// leaf size (return)
+		std::vector<int> &leaf_size) = 0; // leaf size (return)
 
 	friend class KD_Tree;			// allow kd-tree to access
 
@@ -50,7 +47,7 @@ public:
 		MinK_List *list);				// k-NN results (return)
 
 	virtual void traversal(			// traversal kd-tree
-		vector<int> &leaf_size);		// leaf size (return)
+		std::vector<int> &leaf_size);	// leaf size (return)
 
 protected:
 	int n_pts_;						// number of data objects
@@ -81,7 +78,7 @@ public:
 		MinK_List *list);				// k-NN results (return)
 
 	virtual void traversal(			// traversal kd-tree
-		vector<int> &leaf_size);		// leaf size (return)
+		std::vector<int> &leaf_size);	// leaf size (return)
 
 protected:
 	int   cut_dim_;					// cutting dimension

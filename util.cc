@@ -1,4 +1,16 @@
-#include "headers.h"
+#include <algorithm>
+#include <cassert>
+#include <cstring>
+
+#include <unistd.h>
+#include <stdarg.h>
+#include <sys/stat.h>
+#include <sys/types.h>
+#include <sys/time.h>
+
+#include "def.h"
+#include "util.h"
+#include "pri_queue.h"
 
 timeval g_start_time;
 timeval g_end_time;
