@@ -1,6 +1,8 @@
 #ifndef __KD_TREE_H
 #define __KD_TREE_H
 
+#include <vector>
+
 class KD_Rect;
 class KD_Node;
 class MinK_List;

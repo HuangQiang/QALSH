@@ -1,7 +1,14 @@
+#include <stdio.h>
+#include <unistd.h>
+#include <stdarg.h>
+#include <sys/stat.h>
+#include <sys/types.h>
+#include <sys/time.h>
+
 #include <algorithm>
+#include <cassert>
 #include <cstring>
 #include <unordered_map>
-#include <sys/time.h>
 
 #include "def.h"
 #include "util.h"
@@ -162,8 +169,12 @@ int knn_of_qalsh_plus(				// k-NN search of qalsh+
 	// -------------------------------------------------------------------------
 	//  c-k-ANN search by QALSH+
 	// -------------------------------------------------------------------------
+	int start = 1;
+	int end = lsh->get_num_blocks();
+	assert(end >= start);
+
 	printf("Top-k NN Search by QALSH+: \n");
-	for (int nb = 2; nb <= 10; ++nb) {
+	for (int nb = start; nb <= end; ++nb) {
 		printf("  nb = %d\n", nb);
 		fprintf(fp, "nb = %d\n", nb);
 

@@ -1,6 +1,8 @@
 #ifndef __QALSH_H
 #define __QALSH_H
 
+#include <vector>
+
 class BNode;
 class BLeafNode;
 class BTree;

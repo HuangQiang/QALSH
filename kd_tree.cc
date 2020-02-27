@@ -1,4 +1,5 @@
 #include <algorithm>
+#include <vector>
 
 #include "def.h"
 #include "kd_rect.h"

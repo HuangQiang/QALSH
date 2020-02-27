@@ -1,6 +1,8 @@
 #ifndef __ANN_H
 #define __ANN_H
 
+struct Result;
+
 // -----------------------------------------------------------------------------
 int linear_scan(					// brute-force linear scan (data in disk)
 	int   n,							// number of data objects

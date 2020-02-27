@@ -1,4 +1,6 @@
 #include <algorithm>
+#include <cmath>
+#include <cstdlib>
 
 #include "def.h"
 #include "random.h"

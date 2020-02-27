@@ -1,3 +1,4 @@
+#include <stdio.h>
 #include <algorithm>
 #include <cassert>
 #include <cstring>

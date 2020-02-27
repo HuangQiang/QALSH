@@ -2,6 +2,8 @@
 #include <cassert>
 #include <cstring>
 #include <unordered_map>
+#include <vector>
+#include <stdio.h>
 
 #include "def.h"
 #include "util.h"

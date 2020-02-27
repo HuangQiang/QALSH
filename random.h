@@ -1,6 +1,9 @@
 #ifndef __RANDOM_H
 #define __RANDOM_H
 
+#include <cstdlib>
+
+
 // -----------------------------------------------------------------------------
 //  functions used for generating random variables (r.v.)
 // -----------------------------------------------------------------------------

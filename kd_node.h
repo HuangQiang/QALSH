@@ -1,7 +1,10 @@
 #ifndef __KD_NODE_H
 #define __KD_NODE_H
 
+#include <vector>
+
 class MinK_List;
+class KD_Tree;
 
 // -----------------------------------------------------------------------------
 //	KD_Node: node of kd-tree (abstract class)

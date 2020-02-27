@@ -1,12 +1,13 @@
-#include <algorithm>
-#include <cassert>
-#include <cstring>
-
+#include <stdio.h>
 #include <unistd.h>
 #include <stdarg.h>
 #include <sys/stat.h>
 #include <sys/types.h>
 #include <sys/time.h>
+
+#include <algorithm>
+#include <cassert>
+#include <cstring>
 
 #include "def.h"
 #include "util.h"
