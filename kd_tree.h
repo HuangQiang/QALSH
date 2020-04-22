@@ -1,11 +1,50 @@
 #ifndef __KD_TREE_H
 #define __KD_TREE_H
 
+#include <iostream>
+#include <algorithm>
+#include <cmath>
 #include <vector>
 
-class KD_Rect;
+#include "def.h"
+#include "kd_node.h"
+
 class KD_Node;
 class MinK_List;
+
+// -----------------------------------------------------------------------------
+//	KD_Rect: orthogonal rectangle for bounding rectangle of kd-tree
+// -----------------------------------------------------------------------------
+class KD_Rect {
+public:
+	float *low_;					// rectangle lower bound
+	float *high_;					// rectangle upper bound
+
+	// -------------------------------------------------------------------------
+	KD_Rect(						// constructor
+		int   dim,						// dimension
+		float l = 0,					// low  boundary, default is zero
+		float h = 0);					// high boundary, default is zero
+
+	// -------------------------------------------------------------------------
+	KD_Rect(						// copy constructor
+		int   dim,						// dimension
+		const KD_Rect &rect);			// rectangle to copy
+
+	// -------------------------------------------------------------------------
+	KD_Rect(						// construct from points
+		int   dim,						// dimension
+		const float *low,				// low point
+		const float *high);				// high point
+
+	// -------------------------------------------------------------------------
+	~KD_Rect();						// destructor
+
+	// -------------------------------------------------------------------------
+	bool inside(					// whether a point inside rectangle
+		int   dim,						// dimension
+		const float *point);			// one point
+};
 
 // -----------------------------------------------------------------------------
 //	KD_Tree: structure for approximate and exact nearest neighbor search
@@ -15,7 +54,7 @@ public:
 	KD_Tree(						// constructor
 		int   n,						// number of data objects
 		int   d,						// dimensionality
-		int   kd_leaf_size,				// leaf size of kd-tree
+		int   leaf,						// leaf size of kd-tree
 		const float **data);			// data objects
 
 	~KD_Tree();						// destructor
@@ -33,15 +72,14 @@ public:
 		int *object_id);				// object id with leaf order (return)
 
 protected:
-	int n_pts_;						// number of data objects
-	int dim_;						// dimensionality
-	int kd_leaf_size_;				// leaf size of kd-tree
+	int   n_pts_;					// number of data objects
+	int   dim_;						// dimensionality
+	int   leaf_;					// leaf size of kd-tree
+	const float **data_;			// data objects
 
 	int   *object_id_;				// data objects id
 	float *bnd_box_low_;			// bounding box - low  object
 	float *bnd_box_high_;			// bounding box - high object
-	const float **data_;			// data objects
-
 	KD_Node *root_;					// root of kd-tree
 
 	// -------------------------------------------------------------------------

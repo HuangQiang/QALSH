@@ -1,11 +1,4 @@
-#include <algorithm>
-#include <vector>
-
-#include "def.h"
-#include "util.h"
-#include "pri_queue.h"
 #include "kd_node.h"
-
 
 // -----------------------------------------------------------------------------
 //	KD_Leaf: leaf node of kd-tree

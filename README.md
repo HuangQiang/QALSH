@@ -78,7 +78,7 @@ If you would like to get more information to run other algorithms, please check 
 
 Finally, we introduce some tricks to set up parameters, i.e., ```B```, ```leaf```, ```L```, ```M```, ```p```, ```z```, and ```c```.
 
-### The settings of ```B```
+### The settings of B
 
 ```B``` is the page size in bytes. It is determined by the dimensionality ```d``` of datasets. We use the following rules to set up ```B```:
 
@@ -90,7 +90,7 @@ Finally, we introduce some tricks to set up parameters, i.e., ```B```, ```leaf``
 
 for the case ```d ⩾ 8192```, we can set up a corresponding larger ```B``` value following the rules above. 
 
-### The settings of ```leaf```, ```L```, and ```M```
+### The settings of leaf, L, and M
 
 ```leaf``` is the maximum leaf size of kd-tree. Thus, it should be smaller than the cardinality of dataset, i.e., ```leaf < n```. Let ```K``` be the number of blocks after kd-tree partitioning. Since we use kd-tree to divide the whole datasets into blocks, ```K``` is 2<sup>i</sup>, where ```i = ceil(log_2 (n/leaf))```. 
 
@@ -99,7 +99,7 @@ for the case ```d ⩾ 8192```, we can set up a corresponding larger ```B``` valu
 - (1) L * M < n<sub>0</sub>. Since we run drusilla select for each block to select the representative objects, it is a natural condition to restrict its size (L * M) less than n<sub>0</sub>.
 - (2) K * L * M ≈ n<sub>0</sub>. If the sample size (i.e., K*L*M) is large, we can well estimate which blocks are closer to the query, but it will a lot of extra time for estimation. If the sample size is small, the time to determine close blocks can be reduced, but these blocks may not be closer to the query than others. This condition is based on our observation. According to our experiments, we find that creating a sample set with cardinality similar to n<sub>0</sub> can achieve a good trade-off.
 
-### The settings of ```p```, ```z```, and ```c```
+### The settings of p, z, and c
 
 ```p``` and ```z``` determine the distance metric and the corresponding p-stable distribution. There are three common settings: 
 

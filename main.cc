@@ -1,4 +1,7 @@
+#include <iostream>
 #include <algorithm>
+#include <cmath>
+#include <cstdlib>
 #include <cstring>
 
 #include "def.h"
@@ -225,7 +228,7 @@ int main(int nargs, char **args)
 	if (alg == 0 || alg == 1 || alg == 3) {
 		data = new float*[n];
 		for (int i = 0; i < n; ++i) data[i] = new float[d];
-		if (read_data(n, d, data_set, data) == 1) return 1;
+		if (read_bin_data(n, d, data_set, data) == 1) return 1;
 
 		if (alg == 1 || alg == 3) {
 			write_data_new_form(n, d, B, (const float **) data, data_folder);
@@ -235,7 +238,7 @@ int main(int nargs, char **args)
 	if (alg == 0 || alg == 2 || alg == 4 || alg == 5) {
 		query = new float*[qn];
 		for (int i = 0; i < qn; ++i) query[i] = new float[d];
-		if (read_data(qn, d, query_set, query) == 1) return 1;
+		if (read_bin_data(qn, d, query_set, query) == 1) return 1;
 	}
 
 	if (alg == 2 || alg == 4 || alg == 5) {

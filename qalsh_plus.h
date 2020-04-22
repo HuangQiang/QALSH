@@ -1,7 +1,19 @@
 #ifndef __QALSH_PLUS_H
 #define __QALSH_PLUS_H
 
+#include <iostream>
+#include <algorithm>
+#include <cassert>
+#include <cmath>
+#include <cstring>
+#include <unordered_map>
 #include <vector>
+
+#include "def.h"
+#include "util.h"
+#include "pri_queue.h"
+#include "kd_tree.h"
+#include "qalsh.h"
 
 class MinK_List;
 class QALSH;
@@ -10,11 +22,11 @@ class QALSH;
 //  Blocks: an block which stores hash tables for some of data objects
 // -----------------------------------------------------------------------------
 struct Blocks {
-	int n_pts_;
-	std::vector<int> index_;
+	int   n_pts_;
+	int   *index_;
 	QALSH *lsh_;
 
-	Blocks() { n_pts_ = -1; lsh_ = NULL; }
+	Blocks() { n_pts_ = -1; index_ = NULL; lsh_ = NULL; }
 	~Blocks() { if (lsh_ != NULL) { delete lsh_; lsh_ = NULL; } }
 };
 
@@ -36,70 +48,63 @@ public:
 		float zeta,						// a parameter of p-stable distr.
 		float ratio,					// approximation ratio
 		const float **data,				// data objects
-		const char *index_path);		// index path
+		const char *path);				// index path
 
 	// -------------------------------------------------------------------------
 	int load(						// load index
-		const char *index_path);		// index path
+		const char *path);				// index path
 
 	// -------------------------------------------------------------------------
 	void display();					// display parameters
 
 	// -------------------------------------------------------------------------
-	inline int get_num_blocks() { return num_blocks_; }
-
-	// -------------------------------------------------------------------------
-	long long knn(					// k-NN search
+	uint64_t knn(					// k-NN search
 		int top_k,						// top-k value
 		int nb,							// number of blocks for search
 		const float *query,				// input query
 		const char *data_folder,		// data folder
 		MinK_List *list);				// top-k results (return)
 
-protected:
+	// -------------------------------------------------------------------------
 	int   n_pts_;					// number of data objects
 	int   dim_;						// dimensionality
 	int   B_;						// page size
-	int   leaf_;					// leaf size of kd-tree
 	int   L_;						// number of projection (drusilla)
 	int   M_;						// number of candidates (drusilla)
 	float p_;						// l_p distance
-	float zeta_;					// a parameter of p-stable distr.
-	float appr_ratio_;				// approximation ratio
-	char  index_path_[200];			// index path
-
 	int   num_blocks_;				// number of blocks 
+	char  path_[200];				// index path
+
+	int   *sample_id_;				// sample data id
+	int   *new_order_id_;			// new order data id after kd-tree partition
+	QALSH *lsh_;					// index of sample data objects
+	std::unordered_map<int, int> sample_id_to_block_; // sample data id to block
 	std::vector<Blocks*> blocks_;	// blocks
 
-	int   sample_n_pts_;			// number of sample data objects
-	QALSH *lsh_;					// index of sample data objects
-	std::vector<int> sample_id_;	// sample data id
-	std::unordered_map<int, int> sample_id_to_block_; // sample data id to block
-
+protected:
 	// -------------------------------------------------------------------------
-	int bulkload(					// bulkloading for each block
-		const float **data);			// original data objects
-
-	// -------------------------------------------------------------------------
-	int kd_tree_partition(			// kd-tree partition 
+	void kd_tree_partition(			// kd-tree partition 
+		int leaf,						// leaf size of kd-tree
 		const float **data,				// data objects
 		std::vector<int> &block_size,	// block size (return)
 		int *new_order_id);				// new order id (return)
 
 	// -------------------------------------------------------------------------
-	int calc_shift_data(			// calculate shift data objects
+	void drusilla_select(			// drusilla select
 		int   n,						// number of data objects
-		int   d,						// data dimension
+		const int *new_order_id,		// new order data id
 		const float **data,				// data objects
-		std::vector<std::vector<float> > &shift_data); // shift data objects (return)
+		int   *sample_id);				// sample data id (return)
 
 	// -------------------------------------------------------------------------
-	int drusilla_select(			// drusilla select
+	void calc_shift_data(			// calculate shift data objects
 		int   n,						// number of data objects
-		int   d,						// data dimension
-		const std::vector<std::vector<float> > &shift_data, // shift data objects
 		const int *new_order_id,		// new order data id
-		int   *sample_id);				// sample data id (return)
+		const float **data,				// data objects
+		int   &max_id,					// data id with max l2-norm (return)
+		float &max_norm,				// max l2-norm (return)
+		float *norm,					// l2-norm of shift data (return)
+		float **shift_data); 			// shift data (return)
 
 	// -------------------------------------------------------------------------
 	int write_params();				// write parameters

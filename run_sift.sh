@@ -14,7 +14,6 @@ leaf=20000
 L=30
 M=7
 c=2.0
-
 dPath=./data/${dname}/${dname}
 dFolder=./data/${dname}/
 

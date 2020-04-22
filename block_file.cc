@@ -1,10 +1,4 @@
-#include <stdio.h>
-#include <cassert>
-#include <cstring>
-
-#include "def.h"
 #include "block_file.h"
-
 
 // -----------------------------------------------------------------------------
 //  some points to NOTE:

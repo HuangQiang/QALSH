@@ -1,20 +1,3 @@
-#include <stdio.h>
-#include <unistd.h>
-#include <stdarg.h>
-#include <sys/stat.h>
-#include <sys/types.h>
-#include <sys/time.h>
-
-#include <algorithm>
-#include <cassert>
-#include <cstring>
-#include <unordered_map>
-
-#include "def.h"
-#include "util.h"
-#include "pri_queue.h"
-#include "qalsh.h"
-#include "qalsh_plus.h"
 #include "ann.h"
 
 // -----------------------------------------------------------------------------
@@ -124,11 +107,18 @@ int indexing_of_qalsh_plus(			// indexing of qalsh+
 	gettimeofday(&g_end_time, NULL);
 	float indexing_time = g_end_time.tv_sec - g_start_time.tv_sec + 
 		(g_end_time.tv_usec - g_start_time.tv_usec) / 1000000.0f;
-	printf("Indexing Time: %f Seconds\n\n", indexing_time);
-	fprintf(fp, "Indexing Time = %f Seconds\n\n", indexing_time);
+	printf("Indexing Time = %f Seconds\n", indexing_time);
+	printf("Memory = %f MB\n\n", g_memory / 1048576.0f);
+	
+	fprintf(fp, "index_time = %f Seconds\n", indexing_time);
+	fprintf(fp, "memory     = %f MB\n\n", g_memory / 1048576.0f);
 	fclose(fp);
 
+	// -------------------------------------------------------------------------
+	//  release space
+	// -------------------------------------------------------------------------
 	delete lsh; lsh = NULL;
+	assert(g_memory == 0);
 
 	return 0;
 }
@@ -170,7 +160,7 @@ int knn_of_qalsh_plus(				// k-NN search of qalsh+
 	//  c-k-ANN search by QALSH+
 	// -------------------------------------------------------------------------
 	int start = 1;
-	int end = lsh->get_num_blocks();
+	int end = lsh->num_blocks_;
 	assert(end >= start);
 
 	printf("Top-k NN Search by QALSH+: \n");
@@ -222,6 +212,7 @@ int knn_of_qalsh_plus(				// k-NN search of qalsh+
 	//  release space
 	// -------------------------------------------------------------------------
 	delete lsh; lsh = NULL;
+	assert(g_memory == 0);
 
 	return 0;
 }
@@ -262,11 +253,18 @@ int indexing_of_qalsh(				// indexing of qalsh
 	gettimeofday(&g_end_time, NULL);
 	float indexing_time = g_end_time.tv_sec - g_start_time.tv_sec + 
 		(g_end_time.tv_usec - g_start_time.tv_usec) / 1000000.0f;
-	printf("Indexing Time: %f Seconds\n\n", indexing_time);
-	fprintf(fp, "Indexing Time = %f Seconds\n\n", indexing_time);
+	printf("Indexing Time = %f Seconds\n", indexing_time);
+	printf("Memory = %f MB\n\n", g_memory / 1048576.0f);
+	
+	fprintf(fp, "index_time = %f Seconds\n", indexing_time);
+	fprintf(fp, "memory     = %f MB\n\n", g_memory / 1048576.0f);
 	fclose(fp);
 
+	// -------------------------------------------------------------------------
+	//  release space
+	// -------------------------------------------------------------------------
 	delete lsh; lsh = NULL;
+	assert(g_memory == 0);
 
 	return 0;
 }
@@ -350,6 +348,7 @@ int knn_of_qalsh(					// k-NN search of qalsh
 	//  release space
 	// -------------------------------------------------------------------------
 	delete lsh; lsh = NULL;
+	assert(g_memory == 0);
 
 	return 0;
 }

@@ -1,14 +1,4 @@
-#include <stdio.h>
-#include <algorithm>
-#include <cassert>
-#include <cstring>
-
-#include "def.h"
-#include "util.h"
-#include "block_file.h"
-#include "b_node.h"
 #include "b_tree.h"
-
 
 // -----------------------------------------------------------------------------
 //  BTree: b-tree to index hash values produced by qalsh
@@ -219,4 +209,19 @@ int BTree::bulkload(				// bulkload a tree from memory
 	if (leaf_child    != NULL) delete leaf_child; 
 
 	return 0;
+}
+
+// -----------------------------------------------------------------------------
+void BTree::load_root() 		// load root of b-tree
+{	
+	if (root_ptr_ == NULL) {
+		root_ptr_ = new BIndexNode();
+		root_ptr_->init_restore(this, root_);
+	}
+}
+
+// -----------------------------------------------------------------------------
+void BTree::delete_root()		// delete root of b-tree
+{
+	if (root_ptr_ != NULL) { delete root_ptr_; root_ptr_ = NULL; }
 }

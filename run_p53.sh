@@ -11,7 +11,6 @@ qn=100
 d=5408
 B=65536
 c=2.0
-
 dPath=./data/${dname}/${dname}
 dFolder=./data/${dname}/
 

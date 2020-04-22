@@ -1,6 +1,16 @@
 #ifndef __B_NODE_H
 #define __B_NODE_H
 
+#include <iostream>
+#include <algorithm>
+#include <cassert>
+#include <cmath>
+#include <cstring>
+
+#include "def.h"
+#include "block_file.h"
+#include "b_tree.h"
+
 class BTree;
 
 // -----------------------------------------------------------------------------

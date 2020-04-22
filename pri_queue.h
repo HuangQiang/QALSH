@@ -1,7 +1,26 @@
 #ifndef __PRI_QUEUE_H
 #define __PRI_QUEUE_H
 
-struct Result;
+#include <iostream>
+#include <algorithm>
+
+#include "def.h"
+
+// -----------------------------------------------------------------------------
+struct Result {						// basic data structure 
+	float key_;
+	int   id_;
+};
+
+// -----------------------------------------------------------------------------
+int ResultComp(						// compare function for qsort (ascending)
+	const void *e1,						// 1st element
+	const void *e2);					// 2nd element
+
+// -----------------------------------------------------------------------------
+int ResultCompDesc(					// compare function for qsort (descending)
+	const void *e1,						// 1st element
+	const void *e2);					// 2nd element
 
 // -----------------------------------------------------------------------------
 //  MinK_List maintains the smallest k values (type float) and associated 

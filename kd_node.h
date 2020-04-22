@@ -1,7 +1,14 @@
 #ifndef __KD_NODE_H
 #define __KD_NODE_H
 
+#include <iostream>
+#include <algorithm>
+#include <cmath>
 #include <vector>
+
+#include "def.h"
+#include "util.h"
+#include "pri_queue.h"
 
 class MinK_List;
 class KD_Tree;

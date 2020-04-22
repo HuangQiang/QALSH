@@ -1,6 +1,17 @@
 #ifndef __B_TREE_H
 #define __B_TREE_H
 
+#include <iostream>
+#include <algorithm>
+#include <cassert>
+#include <cmath>
+#include <cstring>
+
+#include "def.h"
+#include "util.h"
+#include "block_file.h"
+#include "b_node.h"
+
 class  BlockFile;
 class  BNode;
 struct Result;
@@ -46,19 +57,10 @@ protected:
 	}
 
 	// -------------------------------------------------------------------------
-	inline void load_root() {		// load root of b-tree
-		if (root_ptr_ == NULL) {
-			root_ptr_ = new BIndexNode();
-			root_ptr_->init_restore(this, root_);
-		}
-	}
+	void load_root(); 				// load root of b-tree
 
 	// -------------------------------------------------------------------------
-	inline void delete_root() {		// delete root of b-tree
-		if (root_ptr_ != NULL) {
-			delete root_ptr_; root_ptr_ = NULL;
-		}
-	}
+	void delete_root(); 			// delete root of b-tree
 };
 
 #endif // __B_TREE_H

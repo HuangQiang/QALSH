@@ -1,13 +1,4 @@
-#include <stdio.h>
-#include <algorithm>
-#include <cassert>
-#include <cstring>
-
-#include "def.h"
-#include "block_file.h"
 #include "b_node.h"
-#include "b_tree.h"
-
 
 // -----------------------------------------------------------------------------
 //  BNode: basic structure of node in b-tree
