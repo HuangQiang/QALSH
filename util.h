@@ -162,7 +162,7 @@ float calc_recall(					// calc recall (percentage)
 	const Result *result);				// results returned by algorithms
 
 // -----------------------------------------------------------------------------
-long long linear(					// linear scan search
+uint64_t linear(					// linear scan search
 	int   n,							// number of data objects
 	int   d,							// dimensionality
 	int   B,							// page size

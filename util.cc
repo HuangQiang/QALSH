@@ -549,7 +549,7 @@ float calc_recall(					// calc recall (percentage)
 }
 
 // -----------------------------------------------------------------------------
-long long linear(					// linear scan search
+uint64_t linear(					// linear scan search
 	int   n,							// number of data objects
 	int   d,							// dimensionality
 	int   B,							// page size
@@ -605,7 +605,7 @@ long long linear(					// linear scan search
 	delete[] buffer; buffer = NULL;
 	delete[] data; data = NULL;
 	
-	return (long long) total_file;
+	return (uint64_t) total_file;
 }
 
 // -----------------------------------------------------------------------------
