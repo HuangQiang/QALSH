@@ -1,0 +1,6 @@
+*.q linguist-language=C++
+*.ds linguist-language=C++
+*.0 linguist-language=C++
+*.2 linguist-language=C++
+*.5 linguist-language=C++
+*.8 linguist-language=C++
