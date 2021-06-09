@@ -1,5 +1,4 @@
-#ifndef __BLOCK_FILE_H
-#define __BLOCK_FILE_H
+#pragma once
 
 #include <iostream>
 #include <cassert>
@@ -7,6 +6,8 @@
 #include <cstring>
 
 #include "def.h"
+
+namespace nns {
 
 // -----------------------------------------------------------------------------
 //  NOTE: The author of the implementation of class BlockFile is Yufei Tao.
@@ -22,9 +23,9 @@ public:
 	char fname_[200];				// file name
 	bool new_flag_;					// specifies if this is a new file
 	
-	int block_length_;				// length of a block
-	int act_block_;					// block num of fp position
-	int num_blocks_;				// total num of blocks
+	int  block_length_;				// length of a block
+	int  act_block_;				// block num of fp position
+	int  num_blocks_;				// total num of blocks
 
 	// -------------------------------------------------------------------------
 	BlockFile(						// constructor
@@ -35,36 +36,38 @@ public:
 	~BlockFile();					// destructor
 
 	// -------------------------------------------------------------------------
-	inline void put_bytes(const char *bytes, int num) // write <bytes> of length <num>
-	{ fwrite(bytes, num, 1, fp_); }
+	inline void put_bytes(const char *bytes, int num) { // write num bytes
+		fwrite(bytes, SIZECHAR, num, fp_); 
+	}
 
 	// -------------------------------------------------------------------------
-	inline void get_bytes(char *bytes, int num) // read <bytes> of length <num>
-	{ fread(bytes, num, 1, fp_); }
+	inline void get_bytes(char *bytes, int num) { // read num bytes
+		fread(bytes, SIZECHAR, num, fp_); 
+	}
 
 	// -------------------------------------------------------------------------
-	inline void seek_block(int bnum) // move <fp_> to the right with <bnum>
-	{ fseek(fp_, (bnum-act_block_)*block_length_, SEEK_CUR); }
+	inline void seek_block(int bnum) { // move <fp_> to the right with <bnum>
+		fseek(fp_, (bnum-act_block_)*block_length_, SEEK_CUR);
+	}
 
 	// -------------------------------------------------------------------------
-	inline bool file_new() 			// whether this block is modified?
-	{ return new_flag_; }
+	inline bool file_new() { return new_flag_; } // is this block modified?
 
 	// -------------------------------------------------------------------------
-	inline int get_blocklength()	// get block length
-	{ return block_length_; }
+	inline int get_blocklength() { return block_length_; }
 
 	// -------------------------------------------------------------------------
-	inline int get_num_of_blocks()	// get number of blocks
-	{ return num_blocks_; }
+	inline int get_num_of_blocks() { return num_blocks_; }
 
 	// -------------------------------------------------------------------------
-	inline void fwrite_number(int num) // write a value (type int)
-	{ put_bytes((char *) &num, SIZEINT); }
+	inline void fwrite_number(int num) { // write a value (type int)
+		put_bytes((char*) &num, SIZEINT);
+	}
 
 	// -------------------------------------------------------------------------
-	inline int fread_number()		// read a value (type int)
-	{ char ca[SIZEINT]; get_bytes(ca, SIZEINT); return *((int *)ca); }
+	inline int fread_number() {		// read a value (type int)
+		char ca[SIZEINT]; get_bytes(ca, SIZEINT); return *((int *)ca);
+	}
 
 	// -------------------------------------------------------------------------
 	void read_header(				// read remain bytes excluding header
@@ -93,4 +96,4 @@ public:
 		int num);						// num of blocks to be deleted
 };
 
-#endif // __BLOCK_FILE_H
+} // end namespace nns

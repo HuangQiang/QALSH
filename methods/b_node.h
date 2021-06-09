@@ -1,5 +1,4 @@
-#ifndef __B_NODE_H
-#define __B_NODE_H
+#pragma once
 
 #include <iostream>
 #include <algorithm>
@@ -10,6 +9,8 @@
 #include "def.h"
 #include "block_file.h"
 #include "b_tree.h"
+
+namespace nns {
 
 class BTree;
 
@@ -44,7 +45,7 @@ public:
 	virtual int find_position_by_key(float key) { return -1; }
 
 	// -------------------------------------------------------------------------
-	virtual inline float get_key(int index) { return -1.0f; }
+	virtual inline float get_key(int index) { return key_[index]; }
 
 	// -------------------------------------------------------------------------
 	virtual BNode* get_left_sibling(); // get left sibling node
@@ -68,7 +69,7 @@ public:
 	inline int get_header_size() { return SIZECHAR+SIZEINT*3; } 
 
 	// -------------------------------------------------------------------------
-	inline float get_key_of_node() { return key_[0]; }	
+	inline float get_key_of_node() { return key_[0]; }
 
 	// -------------------------------------------------------------------------
 	inline bool isFull() { 
@@ -78,12 +79,12 @@ public:
 
 	// -------------------------------------------------------------------------
 	inline void set_left_sibling(int left_sibling) { 
-		left_sibling_ = left_sibling; 
+		left_sibling_ = left_sibling;
 	}
 
 	// -------------------------------------------------------------------------
 	inline void set_right_sibling(int right_sibling) { 
-		right_sibling_ = right_sibling; 
+		right_sibling_ = right_sibling;
 	}
 
 protected:
@@ -94,7 +95,7 @@ protected:
 	float *key_;					// keys
 
 	bool  dirty_;					// if dirty, write back to file
-	int   block_;					// addr of disk for this node
+	int   block_;					// addr in disk for this node
 	int   capacity_;				// max num of entries can be stored
 	BTree *btree_;					// b-tree of this node
 };
@@ -134,7 +135,7 @@ public:
 
 	// -------------------------------------------------------------------------
 	virtual inline float get_key(int index) { 
-		// assert(index >= 0 && index < num_entries_); 
+		assert(index >= 0 && index < num_entries_);
 		return key_[index]; 
 	}
 
@@ -187,12 +188,12 @@ public:
 	virtual inline int get_entry_size() { return SIZEINT; }
 
 	// -------------------------------------------------------------------------
-	virtual int find_position_by_key( // find pos just less than input key
+	virtual int find_position_by_key(// find pos just less than input key
 		float key);						// input key
 
 	// -------------------------------------------------------------------------
 	virtual inline float get_key(int index) { 
-		// assert(index >= 0 && index < num_keys_);
+		assert(index >= 0 && index < num_keys_);
 		return key_[index]; 
 	}
 
@@ -205,19 +206,19 @@ public:
 	//  array of <key_> with number <capacity_keys_> + <number_keys_> (SIZEINT)
 	// -------------------------------------------------------------------------
 	inline int get_key_size(int block_length) { // block length
-		capacity_keys_ = (int) ceil((float) block_length / LEAF_NODE_SIZE); 
+		capacity_keys_ = (int) ceil((float) block_length / BTREE_LEAF_SIZE); 
 		return capacity_keys_ * SIZEFLOAT + SIZEINT;
-	} 
+	}
 
 	// -------------------------------------------------------------------------
-	inline int get_increment() { return LEAF_NODE_SIZE / get_entry_size(); }
+	inline int get_increment() { return BTREE_LEAF_SIZE / get_entry_size(); }
 
 	// -------------------------------------------------------------------------
 	inline int get_num_keys() { return num_keys_; }
 
 	// -------------------------------------------------------------------------
 	inline int get_entry_id(int index) { 
-		// assert(index >= 0 && index < num_entries_); 
+		assert(index >= 0 && index < num_entries_);
 		return id_[index];
 	}
 
@@ -233,4 +234,4 @@ protected:
 	int capacity_keys_;				// max num of keys can be stored
 };
 
-#endif // __B_NODE_H
+} // end namespace nns

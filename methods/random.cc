@@ -1,5 +1,7 @@
 #include "random.h"
 
+namespace nns {
+
 // -----------------------------------------------------------------------------
 //  functions used for generating random variables (r.v.).
 //
@@ -607,3 +609,5 @@ void rho_of_levy()					// curve of rho vs. w under levy
 		printf("\n");
 	}
 }
+
+} // end namespace nns

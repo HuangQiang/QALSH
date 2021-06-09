@@ -1,130 +1,140 @@
 # QALSH: Query-Aware Locality-Sensitive Hashing
 
-## Introduction
+Welcome to the **QALSH** GitHub!
 
-This package provides two external LSH schemes QALSH and QALSH<sup>+</sup> for high-dimensional ```c-Approximate Nearest Neighbor (c-ANN)``` search under l<sub>p</sub> norm from the following two papers, where 0 < p <= 2.
+**QALSH** is a package for the problem of Nearest Neighbor Search (NNS) over high-dimensional Euclidean spaces. Given a set of data points and a query, the problem of NNS aims to find the nearest data point to the query. It is a very fundamental probelm and has wide applications in many data mining and machine learning tasks.
 
-```bash
-Qiang Huang, Jianlin Feng, Yikai Zhang, Qiong Fang, Wilfred Ng. Query-Aware Locality-Sensitive 
-Hashing for Approximate Nearest Neighbor Search. Proceedings of the VLDB Endowment (PVLDB), 
-9(1): 1-12, 2015.
+This package provides the external memory implementations (disk-based) of QALSH and QALSH<sup>+</sup> for *c*-Approximate Nearest Neighbor Search (c-ANNS) under *l<sub>p</sub>* norm, where *0 < p ⩽ 2*. The internel memory version can be found [here](https://github.com/HuangQiang/QALSH_Mem).
 
-Qiang Huang, Jianlin Feng, Qiong Fang, Wilfred Ng, Wei Wang. Query-Aware Locality-Sensitive 
-Hashing Scheme for l_p Norm. The VLDB Journal, 26(5): 683–708, 2017.
-```
+If you want to get more details of QALSH and QALSH<sup>+</sup>, please refer to our works [Query-Aware Locality-Sensitive Hashing for Approximate Nearest Neighbor Search](https://dl.acm.org/doi/abs/10.14778/2850469.2850470) and [Query-Aware Locality-Sensitive Hashing Scheme for *l<sub>p</sub>* Norm](https://link.springer.com/article/10.1007/s00778-017-0472-7), which have been published in PVLDB 2015 and VLDBJ 2017, respectively.
+
+## Datasets and Queries
+
+We study the performance of QALSH and QALSH<sup>+</sup> over 4 real-life high-dimensional [datasets](https://drive.google.com/drive/folders/1tKMl0_iLSEeuT1ZJ7s4x1BbLHyX0D5OJ), i.e., **Sift**, **Gist**, **Trevi**, and **P53**. We also include a toy dataset **Mnist** for illustration and a large-scale dataset **Sift10M** for further validation. For each dataset, we provide 100 queries (randomly select from its test set or extract from the dataset itself) for evaluations. The statistics of datasets and queries are summarized as follows.
+
+| Datasets | #Data Points (*n*) | #Queries | Dimensionality (*d*) | Range of Coordinates | Data Type |
+| -------- | ------------ | ----- | ------- | ----------- | ------- |
+| Sift     | 1,000,000    | 100   | 128     | [0, 255]    | uint8   |
+| Gist     | 1,000,000    | 100   | 960     | [0, 15,000] | uint16  |
+| Trevi    | 100,800      | 100   | 4,096   | [0, 255]    | uint8   |
+| P53      | 31,059       | 100   | 5,408   | [0, 10,000] | uint16  |
+| Mnist    | 60,000       | 100   | 50      | [0, 255]    | uint8   |
+| Sift10M  | 10,000,000   | 100   | 128     | [0, 255]    | uint8   |
+
+Note that all the datasets and queries are in a binary format, which can be considered as an array of `n·d` coordinates, where each coordinate is specified by the data type, e.g., `uint8` or `uint16`. We currently support four data types: `uint8`, `uint16`, `int32`, and `float32`. One can determine the data type of the dataset based on the range of its coordinates. If you want to support more data types, you can update the interface in the `main.cc` and re-compile the package.
 
 ## Compilation
 
-The package requires ```g++``` with ```c++11``` support. To download and compile the code, type:
+The package requires `g++` with `c++11` support. To download and compile the c++ source codes, please run the commands as follows:
 
 ```bash
-$ git clone https://github.com/HuangQiang/QALSH.git
-$ cd QALSH
-$ make
+git clone https://github.com/HuangQiang/QALSH.git
+cd QALSH/methods/
+make -j
 ```
 
-## Datasets
+## Usages
 
-We use four real-life datasets [Sift](https://drive.google.com/open?id=1Q3_dnblolD9GVis7OakP2mrqmBApytEL), [Gist](https://drive.google.com/open?id=1M3hJl5slY_pu50IQ7ie-t9E6RvzMizYT), [Trevi](https://drive.google.com/open?id=1RF1FJKWHv3y7W7aBrewnOMrWR15dNbJ3), and [P53](https://drive.google.com/open?id=15mzraPmxNRzcfhXsd_KWBgKclUFUZQEj) for comparison. The statistics of the datasets are summarized in the following table:
+Suppose you have cloned the project and you are in the folder `QALSH_Mem/`. We provide bash scripts to run experiments for the six real-life datasets.
 
-| Datasets | #Data Objects  | #Queries | Dimensionality | Page Size | Domain Size | Data Size |
-| -------- | --------- | -------- | -------------- | --------- | ----------- | --------- |
-| Sift     | 1,000,000 | 100      | 128            | 4 KB      | [0, 218]    | 337.8 MB  |
-| Gist     | 1,000,000 | 100      | 960            | 16 KB     | [0, 14,772] | 4.0 GB    |
-| Trevi    | 100,900   | 100      | 4,096          | 64 KB     | [0, 255]    | 1.5 GB    |
-| P53      | 31,159    | 100      | 5,408          | 64 KB     | [0, 10,000] | 833.7 MB  |
+### Step 1: Get the Datasets and Queries
 
-## Run Experiments
+Please download the [datasets](https://drive.google.com/drive/folders/1tKMl0_iLSEeuT1ZJ7s4x1BbLHyX0D5OJ) and copy them to the directory `data/`.
+
+For example, when you get `Sift.ds` and `Sift.q`, please move them to the paths `data/Sift/Sift.ds` and `data/Sift/Sift.q`, respectively. We provide Mnist at this package, you can follow the same pattern to move the datasets to the right place.
+
+### Step 2: Run Experiments
+
+When you run the package, please ensure the paths for the dataset, query set, and truth set are correct. The package will automatically create folder for the output path, so please keep the output path *as short as possible*. All of the experiments can be run with the following commands:
+
+```bash
+cd methods/
+bash run_all.sh
+```
+
+A gentle reminder is that when running QALSH and QALSH<sup>+</sup>, since they need the ground truth results for evaluation, please run `-alg 0` to get the ground truth results first.
+
+### Step 3. Parameter Settings
+
+Finally, if you would like to use this package for *c*-ANNS over other datasets, you may want to get more information about the parameters and know how to set them effectively.
+Based on our experience when we conducted the experiments, we now share some tricks on setting up the parameters, i.e., `B`, `lf`, `L`, `M`, `p`, `z`, and `c`. The illustration of the parameters are as follows.
 
 ```bash
 Usage: qalsh [OPTIONS]
 
 This package supports 6 options to evaluate the performance of QALSH, QALSH^+,
-and Linear_Scan for c-ANN search. The parameters are introduced as follows.
+and Linear_Scan for c-k-ANNS. The parameters are introduced as follows.
 
   -alg    integer    options of algorithms (0 - 5)
   -n      integer    cardinality of dataset
   -d      integer    dimensionality of dataset and query set
   -qn     integer    number of queries
   -B      integer    page size
-  -leaf   integer    leaf size of kd_tree
+  -lf     integer    leaf size of kd_tree
   -L      integer    number of projections for drusilla_select
   -M      integer    number of candidates  for drusilla_select
-  -p      float      l_{p} norm, where 0 < p <= 2
-  -z      float      symmetric factor of p-stable distribution (-1 <= z <= 1)
-  -c      float      approximation ratio for c-ANN search (c > 1)
-  -ds     string     address of data  set
-  -qs     string     address of query set
-  -ts     string     address of truth set
-  -df     string     data folder to store new format of data
+  -p      float      l_{p} norm, where 0 < p ⩽ 2
+  -z      float      symmetric factor of p-stable distribution (-1 ⩽ z ⩽ 1)
+  -c      float      approximation ratio for c-k-ANNS (c > 1)
+  -dt     string     data type (i.e., uint8, uint16, int32, float32)
+  -pf     string     the prefix of dataset, query set, and truth set
   -of     string     output folder to store output results
 ```
 
-We provide the scripts to repeat experiments reported in VLDBJ 2017. A quick example is shown as follows (run QALSH<sup>+</sup> and QALSH on ```Mnist``` with ```Euclidean distance```, where ```p = 2.0``` and ```z = 0.0```):
+#### The settings of `B`
 
-```bash
-# QALSH^+
-./qalsh -alg 1 -n 60000 -d 50 -B 4096 -leaf 4000 -L 30 -M 10 -p 2.0 -z 0.0 -c 2.0 -ds data/Mnist/Mnist.ds -df data/Mnist/ -of results2.0/Mnist/L2.0/
-./qalsh -alg 2 -qn 100 -d 50 -qs data/Mnist/Mnist.q -ts data/Mnist/Mnist.gt2.0 -df data/Mnist/ -of results/Mnist/L2.0/
+`B` is the page size in bytes. It is determined by the data dimensiona `d`. Based on our experience, we use the following rules to set up `B`:
 
-# QALSH
-./qalsh -alg 3 -n 60000 -d 50 -B 4096 -p 2.0 -z 0.0 -c 2.0 -ds data/Mnist/Mnist.ds -df data/Mnist/ -of results2.0/Mnist/L2.0/
-./qalsh -alg 4 -qn 100 -d 50 -qs data/Mnist/Mnist.q -ts data/Mnist/Mnist.gt2.0 -df data/Mnist/ -of results/Mnist/L2.0/
-```
+- (1) 1    ⩽ d < 256: we set **B = 4096**;
+- (2) 256  ⩽ d < 512: we set **B = 8192**;
+- (3) 512  ⩽ d < 1024: we set **B = 16384**;
+- (4) 1024 ⩽ d < 4096: we set **B = 32768**;
+- (5) 4096 ⩽ d < 8192: we set **B = 65536**;
 
-If you would like to get more information to run other algorithms, please check the scripts in the package. When you run the package, please ensure that the path for the dataset, query set, and truth set is correct. Since the package will automatically create folder for the output path, please keep the path as short as possible.
+for the case d ⩾ 8192, we can set up a corresponding larger `B` value following the rules above.
 
-## Parameter Settings
+#### The settings of `lf`, `L`, and `M`
 
-Finally, we introduce some tricks to set up parameters, i.e., ```B```, ```leaf```, ```L```, ```M```, ```p```, ```z```, and ```c```.
+`lf` is the maximum leaf size of kd-tree. `L` and `M` are two parameters used for Drusilla_Select, where `L` is the number of random projections; `M` is the number of representative data points we select on each random projection.
 
-### The settings of B
+Let `K` be the number of blocks, and let n<sub>0</sub> be the actual leaf size after kd-tree partitioning. Once `lf` is determined, `K` and **n<sub>0</sub>** can be computed as follows:
 
-```B``` is the page size in bytes. It is determined by the dimensionality ```d``` of datasets. We use the following rules to set up ```B```:
+- **K = 2<sup>h</sup>**, where `h` is the height of the kd-tree, i.e., **h = ceil(log_2 (n / lf))**;
+- **n<sub>0</sub> = floor(n / K)** or **n<sub>0</sub> = ceil(n / K)** (Note: if `n` is not divisible, these two cases can happen.)
 
-- (1) ```d < 256```: we set ```B = 4096```.
-- (2) ```256 ⩽ d < 512```: we set ```B = 8192```.
-- (3) ```512 ⩽ d < 1024```: we set ```B = 16384```.
-- (4) ```1024 ⩽ d < 4096```: we set ```B = 32768```.
-- (5) ```4096 ⩽ d < 8192```: we set ```B = 65536```.
+When we set up these three parameters `lf`, `L` and `M`, it might be better to satisfy the following three conditions:
 
-for the case ```d ⩾ 8192```, we can set up a corresponding larger ```B``` value following the rules above. 
+- **lf < n**: It is a natural condition that the maximum leaf size should be smaller than the cardinality of dataset;
+- **L · M < n<sub>0</sub>**: It is a natural condition to restrict its size **(L · M)** less than **n<sub>0</sub>** when we run Drusilla_Select to select the representative data points on each block;
+- **K · L · M ≈ n<sub>0</sub>**: This condition is the main trade-off between efficiency and accuracy to set up these three parameters.
+  - On the one hand, if the total number of representative data points **(K · L · M)** is large, we can accurately identify the close blocks to the query, but it may introduce much time for the first-level close block search.
+  - On the other hand, if **(K · L · M)** is small, the time for the first-level close block search can be reduced. However, since these blocks may not be really close to the query, the accuracy for the second-level c-ANNS may also be reduced.
+  - In our experiments, we find that **selecting the representative data points with cardinality approximate to n<sub>0</sub>** can achieve a good trade-off between accuracy and efficiency.
 
-### The settings of leaf, L, and M
+#### The settings of `p`, `z`, and `c`
 
-```leaf``` is the maximum leaf size of kd-tree. Thus, it should be smaller than the cardinality of dataset, i.e., ```leaf < n```. Let ```K``` be the number of blocks after kd-tree partitioning. Since we use kd-tree to divide the whole datasets into blocks, ```K``` is 2<sup>i</sup>, where ```i = ceil(log_2 (n/leaf))```. 
+`p` and `z` determine the distance metric and the corresponding p-stable distribution. There are four cases as follows.
 
-```L```, and ```M``` are two parameters introduced by Drusilla Select. Once ```leaf``` is determined, the actual leaf size n<sub>0</sub> (also known as the number of objects in each block) can be estimated as floor(n / 2<sup>i</sup>) or ceil(n / 2<sup>i</sup>). There are two conditions when we set up ```L``` and ```M```: 
+- *l<sub>2</sub>* distance: set up **p = 2.0** and **z = 0.0**, and apply standard Gaussian distribution.
+- *l<sub>1</sub>* distance: set up **p = 1.0** and **z = 0.0** and apply standard Cauchy distribution.
+- *l<sub>0.5</sub>* distance: set up **p = 0.5** and **z = 1.0** and apply standard Levy distribution.
+- General *l<sub>p</sub>* distance: set up **0 < p ⩽ 2** and **-1 ⩽ z ⩽ 1**.
 
-- (1) L * M < n<sub>0</sub>. Since we run drusilla select for each block to select the representative objects, it is a natural condition to restrict its size (L * M) less than n<sub>0</sub>.
-- (2) K * L * M ≈ n<sub>0</sub>. If the sample size (i.e., K*L*M) is large, we can well estimate which blocks are closer to the query, but it will a lot of extra time for estimation. If the sample size is small, the time to determine close blocks can be reduced, but these blocks may not be closer to the query than others. This condition is based on our observation. According to our experiments, we find that creating a sample set with cardinality similar to n<sub>0</sub> can achieve a good trade-off.
+```c``` is the approximation ratio for *c*-ANNS. We set **c = 2.0** by default. If the dataset is easy, it is also satisfied to set **c = 3.0** or am even larger value.
 
-### The settings of p, z, and c
+## Reference
 
-```p``` and ```z``` determine the distance metric and the corresponding p-stable distribution. There are three common settings: 
+Please use the following BibTex to cite this work if you use **QALSH** for publications.
 
-- (1) Euclidean distance (l<sub>2</sub> distance): we set ```p=2.0```, ```z=0.0``` and apply standard Gaussian distribution.
-- (2) Manhattan distance (l<sub>1</sub> distance): we set ```p=1.0```, ```z=0.0``` and apply standard Cauchy distribution.
-- (3) l<sub>0.5</sub> distance: we set ```p=0.5```, ```z=1.0``` and apply standard Levy distribution. 
-
-In addition, for other l<sub>p</sub> distance, users can set ```0 < p ⩽ 2``` and ```-1 ⩽ z ⩽ 1```.
-
-```c``` is the approximation ratio for c-k-ANN search. We often set ```c=2.0```. But if the dataset is easy, it is also satisfied to set ```c=3.0```.
-
-## Related Publications
-
-If you use this package for publications, please cite the papers as follows.
-
-```bib
+```tex
 @article{huang2017query,
     title={Query-aware locality-sensitive hashing scheme for $$ l\_p $$ norm}
-    author={Huang, Qiang and Feng, Jianlin and Fang, Qiong and Ng, Wilfred and Wang, Wei},
+    author={Huang, Qiang and Feng, Jianlin and Fang, Qiong and Ng, Wilfred and Wang Wei},
     booktitle={The VLDB Journal},
     volumn={26},
     number={5},
     pages={683--708},
-    year={2017},
-    organization={Springer}
+    year={2017}
 }
 
 @article{huang2015query,
@@ -134,7 +144,8 @@ If you use this package for publications, please cite the papers as follows.
     volumn={9},
     number={1},
     pages={1--12},
-    year={2015},
-    organization={VLDB Endowment}
+    year={2015}
 }
 ```
+
+It is welcome to contact me (<huangq@comp.nus.edu.sg>) if you meet any issue. Thank you.

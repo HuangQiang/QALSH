@@ -1,5 +1,7 @@
 #include "b_tree.h"
 
+namespace nns {
+
 // -----------------------------------------------------------------------------
 //  BTree: b-tree to index hash values produced by qalsh
 // -----------------------------------------------------------------------------
@@ -16,14 +18,10 @@ BTree::~BTree()						// destructor
 	char *header = new char[file_->get_blocklength()];
 	write_header(header);			// write <root_> to <header>
 	file_->set_header(header);		// write back to disk
-	delete[] header; header = NULL;
+	delete[] header;
 
-	if (root_ptr_ != NULL) {
-		delete root_ptr_; root_ptr_ = NULL;
-	}
-	if (file_ != NULL) {
-		delete file_; file_ = NULL;
-	}
+	if (root_ptr_ != NULL) { delete root_ptr_; root_ptr_ = NULL; }
+	if (file_     != NULL) { delete file_;     file_     = NULL; }
 }
 
 // -----------------------------------------------------------------------------
@@ -59,10 +57,7 @@ void BTree::init_restore(			// load the tree from a tree file
 	const char *fname)					// file name
 {
 	FILE *fp = fopen(fname, "r");	// check whether the file exists
-	if (!fp) {
-		printf("tree file %s does not exist\n", fname);
-		exit(1);
-	}
+	if (!fp) { printf("tree file %s does not exist\n", fname);  exit(1); }
 	fclose(fp);
 
 	// -------------------------------------------------------------------------
@@ -78,8 +73,7 @@ void BTree::init_restore(			// load the tree from a tree file
 	char *header = new char[file_->get_blocklength()];
 	file_->read_header(header);		// read remain bytes from header
 	read_header(header);			// init <root> from <header>
-
-	delete[] header; header = NULL;
+	delete[] header;
 }
 
 // -----------------------------------------------------------------------------
@@ -114,7 +108,7 @@ int BTree::bulkload(				// bulkload a tree from memory
 			leaf_act_nd->init(0, this);
 
 			if (first_node) {
-				first_node  = false; // init <start_block>
+				first_node  = false;// init <start_block>
 				start_block = leaf_act_nd->get_block();
 			}
 			else {					// label sibling
@@ -132,12 +126,8 @@ int BTree::bulkload(				// bulkload a tree from memory
 			leaf_act_nd  = NULL;
 		}
 	}
-	if (leaf_prev_nd != NULL) {
-		delete leaf_prev_nd; leaf_prev_nd = NULL;
-	}
-	if (leaf_act_nd != NULL) {
-		delete leaf_act_nd; leaf_act_nd = NULL;
-	}
+	if (leaf_prev_nd != NULL) { delete leaf_prev_nd; leaf_prev_nd = NULL; }
+	if (leaf_act_nd  != NULL) { delete leaf_act_nd;  leaf_act_nd  = NULL; }
 
 	// -------------------------------------------------------------------------
 	//  stop condition: lastEndBlock == lastStartBlock (only one node, as root)
@@ -188,12 +178,9 @@ int BTree::bulkload(				// bulkload a tree from memory
 				index_act_nd = NULL;
 			}
 		}
-		if (index_prev_nd != NULL) {// release the space
-			delete index_prev_nd; index_prev_nd = NULL;
-		}
-		if (index_act_nd != NULL) {
-			delete index_act_nd; index_act_nd = NULL;
-		}
+		// release the space
+		if (index_prev_nd!=NULL) { delete index_prev_nd; index_prev_nd=NULL; }
+		if (index_act_nd !=NULL) { delete index_act_nd;  index_act_nd =NULL; }
 		
 		last_start_block = start_block;// update info
 		last_end_block = end_block;	// build b-tree of higher level
@@ -201,12 +188,12 @@ int BTree::bulkload(				// bulkload a tree from memory
 	}
 	root_ = last_start_block;		// update the <root>
 
-	if (index_prev_nd != NULL) delete index_prev_nd; 
+	if (index_prev_nd != NULL) delete index_prev_nd;
 	if (index_act_nd  != NULL) delete index_act_nd;
 	if (index_child   != NULL) delete index_child;
-	if (leaf_prev_nd  != NULL) delete leaf_prev_nd; 
-	if (leaf_act_nd   != NULL) delete leaf_act_nd; 	
-	if (leaf_child    != NULL) delete leaf_child; 
+	if (leaf_prev_nd  != NULL) delete leaf_prev_nd;
+	if (leaf_act_nd   != NULL) delete leaf_act_nd;
+	if (leaf_child    != NULL) delete leaf_child;
 
 	return 0;
 }
@@ -225,3 +212,5 @@ void BTree::delete_root()		// delete root of b-tree
 {
 	if (root_ptr_ != NULL) { delete root_ptr_; root_ptr_ = NULL; }
 }
+
+} // end namespace nns

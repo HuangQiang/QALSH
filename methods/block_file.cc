@@ -1,4 +1,7 @@
 #include "block_file.h"
+#include "def.h"
+
+namespace nns {
 
 // -----------------------------------------------------------------------------
 //  some points to NOTE:
@@ -66,7 +69,7 @@ BlockFile::BlockFile(				// constructor
 		int  length = block_length_ - (int) ftell(fp_);
 		char *buffer = new char[length];
 
-		memset(buffer, 0, sizeof(buffer));
+		memset(buffer, 0, length*SIZECHAR); // memset(buffer, 0, sizeof(buffer));
 		put_bytes(buffer, length);
 
 		delete[] buffer; buffer = NULL;
@@ -246,3 +249,5 @@ bool BlockFile::delete_last_blocks(	// delete last <num> blocks
 	act_block_ = 0;					// <act_block> = 0
 	return true;
 }
+
+} // end namespace nns

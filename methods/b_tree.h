@@ -1,5 +1,4 @@
-#ifndef __B_TREE_H
-#define __B_TREE_H
+#pragma once
 
 #include <iostream>
 #include <algorithm>
@@ -12,16 +11,17 @@
 #include "block_file.h"
 #include "b_node.h"
 
-class  BlockFile;
-class  BNode;
-struct Result;
+namespace nns {
+
+class BlockFile;
+class BNode;
 
 // -----------------------------------------------------------------------------
 //  BTree: b-tree to index hash tables produced by qalsh
 // -----------------------------------------------------------------------------
 class BTree {
 public:
-	int root_;						// address of disk for root
+	int   root_;					// disk address of root
 	BNode *root_ptr_;				// pointer of root
 	BlockFile *file_;				// file in disk to store
 	
@@ -45,13 +45,13 @@ public:
 
 protected:
 	// -------------------------------------------------------------------------
-	inline int read_header(const char *buf) { // read <root> from buffer
+	inline int read_header(const char *buf) {// read <root> from buffer
 		memcpy(&root_, buf, SIZEINT);
 		return SIZEINT;
 	}
 
 	// -------------------------------------------------------------------------
-	inline int write_header(char *buf) { // write <root> into buffer
+	inline int write_header(char *buf) {// write <root> into buffer
 		memcpy(buf, &root_, SIZEINT);
 		return SIZEINT;
 	}
@@ -63,4 +63,4 @@ protected:
 	void delete_root(); 			// delete root of b-tree
 };
 
-#endif // __B_TREE_H
+} // end namespace nns

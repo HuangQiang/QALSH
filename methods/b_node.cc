@@ -1,5 +1,7 @@
 #include "b_node.h"
 
+namespace nns {
+
 // -----------------------------------------------------------------------------
 //  BNode: basic structure of node in b-tree
 // -----------------------------------------------------------------------------
@@ -106,13 +108,8 @@ BIndexNode::~BIndexNode()			// destructor
 
 		delete[] buf; buf = NULL;
 	}
-
-	if (key_ != NULL) {
-		delete[] key_; key_ = NULL;
-	}
-	if (son_ != NULL) {
-		delete[] son_; son_ = NULL;
-	}
+	if (key_ != NULL) { delete[] key_; key_ = NULL; }
+	if (son_ != NULL) { delete[] son_; son_ = NULL; }
 }
 
 // -----------------------------------------------------------------------------
@@ -130,18 +127,15 @@ void BIndexNode::init(				// init a new node, which not exist
 	int b_length = btree_->file_->get_blocklength();
 	capacity_ = (b_length - get_header_size()) / get_entry_size();
 	if (capacity_ < 50) {			// ensure at least 50 entries
-		printf("capacity = %d, which is too small.\n", capacity_);
+		printf("capacity (%d < 50) is too small.\n", capacity_);
 		exit(1);
 	}
-
-	key_ = new float[capacity_];
-	son_ = new int[capacity_];
-	memset(key_, MINREAL, capacity_ * SIZEFLOAT);
-	memset(son_, -1,      capacity_ * SIZEINT);
+	key_ = new float[capacity_]; memset(key_, MINREAL, capacity_*SIZEFLOAT);
+	son_ = new int[capacity_]; memset(son_, -1, capacity_*SIZEINT);
 
 	char *blk = new char[b_length];	// init <block_>, get new addr
 	block_ = btree_->file_->append_block(blk);
-	delete[] blk; blk = NULL;
+	delete[] blk;
 }
 
 // -----------------------------------------------------------------------------
@@ -156,14 +150,11 @@ void BIndexNode::init_restore(		// load an exist node from disk to init
 	int b_len = btree_->file_->get_blocklength();
 	capacity_ = (b_len - get_header_size()) / get_entry_size();
 	if (capacity_ < 50) {			// at least 50 entries
-		printf("capacity = %d, which is too small.\n", capacity_);
+		printf("capacity (%d < 50) is too small.\n", capacity_);
 		exit(1);
 	}
-
-	key_ = new float[capacity_];
-	son_ = new int[capacity_];
-	memset(key_, MINREAL, capacity_ * SIZEFLOAT);
-	memset(son_, -1,      capacity_ * SIZEINT);
+	key_ = new float[capacity_]; memset(key_, MINREAL, capacity_*SIZEFLOAT);
+	son_ = new int[capacity_]; memset(son_, -1, capacity_*SIZEINT);
 
 	// -------------------------------------------------------------------------
 	//  read the buffer <blk> to init <level_>, <num_entries_>, <left_sibling_>,
@@ -172,8 +163,7 @@ void BIndexNode::init_restore(		// load an exist node from disk to init
 	char *blk = new char[b_len];
 	btree_->file_->read_block(blk, block);
 	read_from_buffer(blk);
-
-	delete[] blk; blk = NULL;
+	delete[] blk;
 }
 
 // -----------------------------------------------------------------------------
@@ -220,11 +210,8 @@ int BIndexNode::find_position_by_key(
 	float key)							// input key
 {
 	int pos = -1;
-	for (int i = num_entries_ - 1; i >= 0; --i) {
-		if (key_[i] <= key) {
-			pos = i;
-			break;
-		}
+	for (int i = num_entries_-1; i >= 0; --i) {
+		if (key_[i] <= key) { pos = i; break; }
 	}
 	return pos;
 }
@@ -260,7 +247,7 @@ void BIndexNode::add_new_child( // add a new entry from its child node
 	float key,							// input key
 	int   son)							// input son
 {
-	// assert(num_entries_ >= 0 && num_entries_ < capacity_);
+	assert(num_entries_ >= 0 && num_entries_ < capacity_);
 	key_[num_entries_] = key;		// add new entry into its pos
 	son_[num_entries_] = son;
 
@@ -292,20 +279,16 @@ BLeafNode::BLeafNode()				// constructor
 BLeafNode::~BLeafNode()				// destructor
 {
 	if (dirty_) {					// if dirty, rewrite to disk
-		int  block_length = btree_->file_->get_blocklength();
+		int block_length = btree_->file_->get_blocklength();
+		
 		char *buf = new char[block_length];
 		write_to_buffer(buf);
 		btree_->file_->write_block(buf, block_);
-
-		delete[] buf; buf = NULL;
+		delete[] buf;
 	}
 	
-	if (key_ != NULL) {
-		delete[] key_; key_ = NULL;
-	}
-	if (id_ != NULL) {
-		delete[] id_; id_ = NULL;
-	}
+	if (key_ != NULL) { delete[] key_; key_ = NULL; }
+	if (id_  != NULL) { delete[] id_;  id_  = NULL; }
 }
 
 // -----------------------------------------------------------------------------
@@ -315,7 +298,6 @@ void BLeafNode::init(				// init a new node, which not exist
 {
 	btree_         = btree;
 	level_         = (char) level;
-
 	num_entries_   = 0;
 	num_keys_      = 0;
 	left_sibling_  = -1;
@@ -329,22 +311,21 @@ void BLeafNode::init(				// init a new node, which not exist
 	int key_size = get_key_size(b_length);
 
 	key_ = new float[capacity_keys_];
-	memset(key_, MINREAL, capacity_keys_ * SIZEFLOAT);
+	memset(key_, MINREAL, capacity_keys_*SIZEFLOAT);
 	
 	int header_size = get_header_size();
 	int entry_size = get_entry_size();
 
 	capacity_ = (b_length - header_size - key_size) / entry_size;
 	if (capacity_ < 100) {			// at least 100 entries
-		printf("capacity = %d, which is too small.\n", capacity_);
+		printf("capacity (%d < 100) is too small.\n", capacity_);
 		exit(1);
 	}
-	id_ = new int[capacity_];
-	memset(id_, -1, capacity_ * SIZEINT);
+	id_ = new int[capacity_]; memset(id_, -1, capacity_*SIZEINT);
 
 	char *blk = new char[b_length];
 	block_ = btree_->file_->append_block(blk);
-	delete[] blk; blk = NULL;
+	delete[] blk;
 }
 
 // -----------------------------------------------------------------------------
@@ -363,18 +344,17 @@ void BLeafNode::init_restore(		// load an exist node from disk to init
 	int key_size = get_key_size(b_length);
 
 	key_ = new float[capacity_keys_];
-	memset(key_, MINREAL, capacity_keys_ * SIZEFLOAT);
+	memset(key_, MINREAL, capacity_keys_*SIZEFLOAT);
 	
 	int header_size = get_header_size();
 	int entry_size = get_entry_size();
 
 	capacity_ = (b_length - header_size - key_size) / entry_size;
 	if (capacity_ < 100) {			// at least 100 entries
-		printf("capacity = %d, which is too small.\n", capacity_);
+		printf("capacity (%d < 100) is too small.\n", capacity_);
 		exit(1);
 	}
-	id_ = new int[capacity_];
-	memset(id_, -1, capacity_ * SIZEINT);
+	id_ = new int[capacity_]; memset(id_, -1, capacity_*SIZEINT);
 
 	// -------------------------------------------------------------------------
 	//  read the buffer <blk> to init <level_>, <num_entries_>, <left_sibling_>,
@@ -383,8 +363,7 @@ void BLeafNode::init_restore(		// load an exist node from disk to init
 	char *blk = new char[b_length];
 	btree_->file_->read_block(blk, block);
 	read_from_buffer(blk);
-
-	delete[] blk; blk = NULL;
+	delete[] blk;
 }
 
 // -----------------------------------------------------------------------------
@@ -443,10 +422,8 @@ int BLeafNode::find_position_by_key(// find pos just less than input key
 {
 	int pos = -1;							
 	for (int i = num_keys_ - 1; i >= 0; --i) {
-		if (key_[i] <= key) {
-			pos = i;				// position of corresponding id
-			break;
-		}
+		// position of corresponding id
+		if (key_[i] <= key) { pos = i; break; }
 	}
 	return pos;
 }
@@ -478,14 +455,18 @@ void BLeafNode::add_new_child( 		// add new child by input id and key
 	int   id,							// input object id
 	float key)							// input key
 {
-	// assert(num_entries_ < capacity_);
+	assert(num_entries_ >= 0 && num_entries_ < capacity_);
+	// add new id into its pos
+	id_[num_entries_] = id;
 
-	id_[num_entries_] = id;			// add new id into its pos
-	if ((num_entries_ * SIZEINT) % LEAF_NODE_SIZE == 0) {
+	// add new key into its pos and update <num_keys> if satisfied
+	if ((num_entries_ * SIZEINT) % BTREE_LEAF_SIZE == 0) {
 		assert(num_keys_ < capacity_keys_);
-		key_[num_keys_] = key;		// add new key into its pos
-		++num_keys_;				// update <num_keys>
+		key_[num_keys_] = key;
+		++num_keys_; 
 	}
 	++num_entries_;					// update <num_entries>
 	dirty_ = true;					// node modified, <dirty> is true
 }
+
+} // end namespace nns
