@@ -86,17 +86,7 @@ int read_data(                      // read data (binary) from disk
     if (!fp) { printf("Could not open %s\n", fname); return 1; }
 
     uint64_t size = (uint64_t) n*d;
-    uint32_t max_uint = 4294967295U;
-    if (size < max_uint) {
-        // if no longer than size_t, read the whole array directly
-        fread(data, sizeof(DType), (uint32_t) size, fp);
-    }
-    else {
-        // we store data points in linear order, n*d == d*n (save multi times)
-        for (int i = 0; i < d; ++i) {
-            fread(&data[(uint64_t)i*n], sizeof(DType), n, fp);
-        }
-    }
+    fread(data, sizeof(DType), size, fp);
     fclose(fp);
     return 0;
 }
@@ -146,7 +136,7 @@ int write_data_new_form(            // write dataset with new format
     int  start = 0;
     for (int i = 0; i < total_file; ++i) {
         // write data to buffer
-        if (start + num > n) num = n - start;
+        if (start+num > n) num = n-start;
         write_data_to_buffer<DType>(num, d, &data[(uint64_t)start*d], buffer);
 
         // write one page of data to disk

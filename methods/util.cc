@@ -21,7 +21,7 @@ void create_dir(                    // create directory
     for (int i = 0; i < len; ++i) {
         if (path[i] != '/') continue;
 
-        char ch = path[i + 1]; path[i+1] = '\0';
+        char ch = path[i+1]; path[i+1] = '\0';
         if (access(path, F_OK) != 0) {
             if (mkdir(path, 0755) != 0) {
                 printf("Could not create %s\n", path); exit(1);
@@ -72,18 +72,7 @@ int write_ground_truth(             // write ground truth to disk
     if (!fp) { printf("Could not create %s\n", fname); return 1; }
     
     uint64_t size = (uint64_t) n*d;
-    uint32_t max_uint = 4294967295U;
-    
-    if (size < max_uint) {
-        // if no longer than size_t, write the whole array to disk directly
-        fwrite(truth, sizeof(Result), size, fp);
-    }
-    else {
-        // we store ground truth in linear order, n*d == d*n (save multi times)
-        for (int i = 0; i < d; ++i) {
-            fwrite(&truth[(uint64_t)i*n], sizeof(Result), n, fp);
-        }
-    }
+    fwrite(truth, sizeof(Result), size, fp);
     fclose(fp);
     return 0;
 }
@@ -112,7 +101,7 @@ float calc_recall(                  // calc recall (percentage)
     while (i >= 0 && list->ith_key(i) > truth[last].key_) {
         i--;
     }
-    return (i + 1) * 100.0f / k;
+    return (i+1)*100.0f / k;
 }
 
 } // end namespace nns
