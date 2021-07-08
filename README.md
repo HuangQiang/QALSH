@@ -8,6 +8,8 @@ This package provides the external memory implementations (disk-based) of QALSH 
 
 If you want to get more details of QALSH and QALSH<sup>+</sup>, please refer to our works [Query-Aware Locality-Sensitive Hashing for Approximate Nearest Neighbor Search](https://dl.acm.org/doi/abs/10.14778/2850469.2850470) and [Query-Aware Locality-Sensitive Hashing Scheme for *l<sub>p</sub>* Norm](https://link.springer.com/article/10.1007/s00778-017-0472-7), which have been published in PVLDB 2015 and VLDBJ 2017, respectively.
 
+<p align="center"><img src="imgs/query-aware-bucket-partition.jpg" alt="drawing" width="400"/></p>
+
 ## Datasets and Queries
 
 We study the performance of QALSH and QALSH<sup>+</sup> over 4 real-life high-dimensional [datasets](https://drive.google.com/drive/folders/1tKMl0_iLSEeuT1ZJ7s4x1BbLHyX0D5OJ), i.e., **Sift**, **Gist**, **Trevi**, and **P53**. We also include a toy dataset **Mnist** for illustration and a large-scale dataset **Sift10M** for further validation. For each dataset, we provide 100 queries (randomly select from its test set or extract from the dataset itself) for evaluations. The statistics of datasets and queries are summarized as follows.
@@ -35,7 +37,7 @@ make -j
 
 ## Usages
 
-Suppose you have cloned the project and you are in the folder `QALSH_Mem/`. We provide bash scripts to run experiments for the six real-life datasets.
+Suppose you have cloned the project and you are in the folder `QALSH/`. We provide bash scripts to run experiments for the six real-life datasets.
 
 ### Step 1: Get the Datasets and Queries
 
